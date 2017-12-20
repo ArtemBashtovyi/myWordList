@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="100dp"
+
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="@dimen/word_item_root_view_margin_right"
+        android:layout_marginRight="@dimen/word_item_root_view_margin_right"
+        android:orientation="vertical"
+        android:id="@+id/root_view"
+        >
+
+        <TextView
+            android:id="@+id/main_field_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18dp"
+            android:textStyle="bold"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/second_field_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14dp"
+            android:text="TextView" />
+
+        <CheckedTextView
+            android:id="@+id/checked_text_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="32dp"
+            android:gravity="center_vertical"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:checkMark="?android:attr/listChoiceIndicatorSingle"
+            android:paddingTop="16dp"
+            android:paddingRight="16dp"
+            android:checkMarkTint="@color/colorPrimary"
+            android:paddingBottom="16dp">
+
+        </CheckedTextView>
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

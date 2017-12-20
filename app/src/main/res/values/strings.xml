@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">mywordlist</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_ua_version">Укр</string>
+    <string name="action_eng_version">Анг</string>
+    <string name="action_full_version">Фул</string>
+
+    <string name="title_activity_word_list">WordListActivity</string>
+    <string name="title_fragment_dialog">Додати слово</string>
+    <string name="hint_edit_text_engVersion">Іноземна версія</string>
+    <string name="hint_edit_text_uaVersion">Українська версія</string>
+    <string name="action_settings">Settings</string>
+
+
+</resources>
