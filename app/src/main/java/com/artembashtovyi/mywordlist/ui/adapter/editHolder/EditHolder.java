@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.CheckedTextView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -25,20 +26,23 @@ public class EditHolder extends RecyclerView.ViewHolder {
     TextView secondTv;
 
     @BindView(R.id.checked_text_item)
-    CheckedTextView textView;
+    CheckedTextView checkedTv;
 
     @BindView(R.id.root_view)
     LinearLayout rootView;
 
-    SelectedWord selectedWord;
-    private OnItemSelectedListener callbackSelectedListener;
+    @BindView(R.id.image_edit)
+    ImageView editIv;
 
-    EditHolder(View itemView, OnItemSelectedListener callback) {
+    SelectedWord selectedWord;
+    /*private OnItemSelectedListener callbackSelectedListener;*/
+
+    EditHolder(View itemView) {
         super(itemView);
         ButterKnife.bind(this,itemView);
-        this.callbackSelectedListener = callback;
+        /*this.callbackSelectedListener = callback;*/
 
-        textView.setOnClickListener(view -> {
+        checkedTv.setOnClickListener(view -> {
 
             // set graphic state for item
             if (selectedWord.isSelected()) {
@@ -46,32 +50,32 @@ public class EditHolder extends RecyclerView.ViewHolder {
             } else {
                 setChecked(true);
             }
-            callbackSelectedListener.callBack(selectedWord);
+            /*callbackSelectedListener.callBack(selectedWord);*/
         });
 
 
         // set icon checked
         TypedValue value = new TypedValue();
-        textView.getContext().getTheme().resolveAttribute(android.R.attr.listChoiceIndicatorMultiple, value, true);
+        checkedTv.getContext().getTheme().resolveAttribute(android.R.attr.listChoiceIndicatorMultiple, value, true);
         int checkMarkDrawableResId = value.resourceId;
-        textView.setCheckMarkDrawable(checkMarkDrawableResId);
+        checkedTv.setCheckMarkDrawable(checkMarkDrawableResId);
     }
 
    public void setChecked(boolean value) {
         if (value) {
-            textView.setBackgroundColor(Color.LTGRAY);
+            checkedTv.setBackgroundColor(Color.LTGRAY);
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                textView.setBackground(null);
-            } else textView.setBackgroundColor(Color.WHITE);
+                checkedTv.setBackground(null);
+            } else checkedTv.setBackgroundColor(Color.WHITE);
         }
 
         selectedWord.setSelected(value);
-        textView.setChecked(value);
+        checkedTv.setChecked(value);
     }
 
 
-    public interface OnItemSelectedListener {
+    /*public interface OnItemSelectedListener {
         void callBack(SelectedWord selectedWord);
-    }
+    }*/
 }

@@ -15,7 +15,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,26 +23,23 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 
 import com.artembashtovyi.mywordlist.R;
-import com.artembashtovyi.mywordlist.data.model.SelectedWord;
 import com.artembashtovyi.mywordlist.data.model.Word;
 import com.artembashtovyi.mywordlist.data.sqlite.WordDeleteBackground;
 import com.artembashtovyi.mywordlist.data.sqlite.WordInsertBackground;
-import com.artembashtovyi.mywordlist.ui.adapter.EngVersionView;
-import com.artembashtovyi.mywordlist.ui.adapter.ViewBindContract;
-import com.artembashtovyi.mywordlist.ui.adapter.editHolder.EditHolder;
+import com.artembashtovyi.mywordlist.data.sqlite.WordEditBackground;
 import com.artembashtovyi.mywordlist.ui.adapter.editHolder.EditWordAdapter;
+import com.artembashtovyi.mywordlist.ui.list.addingDialog.EditDialog;
 import com.artembashtovyi.mywordlist.ui.list.addingDialog.WordAddDialog;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class WordListActivity extends AppCompatActivity
+public class EditListActivity extends AppCompatActivity
         implements WordsView,LoaderManager.LoaderCallbacks<List<Word>>,WordAddDialog.NoticeDialogListener,
-        EditHolder.OnItemSelectedListener {
+        EditWordAdapter.OnViewClickListener,EditDialog.NoticeDialogListener {
 
     private final static int LOADER_ID = 101;
 
@@ -68,16 +64,17 @@ public class WordListActivity extends AppCompatActivity
     private ActionMode actionMode;
 
     public static void start(@NonNull Context context) {
-        Intent intent = new Intent(context,WordListActivity.class);
+        Intent intent = new Intent(context,EditListActivity.class);
         context.startActivity(intent);
     }
 
     // TODO : ON THIS SCREEN ONLY FULL VERSION
     // TODO :  IMPL COMPARABLE
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_word_list);
+        setContentView(R.layout.activity_edit_list);
 
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
@@ -85,6 +82,7 @@ public class WordListActivity extends AppCompatActivity
         getSupportLoaderManager().initLoader(LOADER_ID,null,this);
 
         fab.setOnClickListener(view ->  {
+
             WordAddDialog fragment =  WordAddDialog.newInstance();
             fragment.show(getFragmentManager(),"WordAddingDialog");
         });
@@ -159,8 +157,8 @@ public class WordListActivity extends AppCompatActivity
             editWordAdapter.changeContract(new EngVersionView());
         } else if (id == R.id.action_full_version) {
             editWordAdapter.changeContract(new FullVersionView());
-        }
-*/
+        }*/
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -171,6 +169,12 @@ public class WordListActivity extends AppCompatActivity
     @Override
     public void onPositiveClick(Word word) {
         addWord(word);
+    }
+
+    // EditDialog callback
+    @Override
+    public void onEditPositiveClick(Word oldWord,Word word) {
+        editWord(oldWord,word);
     }
 
 
@@ -187,13 +191,15 @@ public class WordListActivity extends AppCompatActivity
         showWords(words);
 
         // FIXME: 12/15/17 stupid solution
-        initSpinnerListener();
+        //initSpinnerListener();
     }
 
     @Override
     public void onLoaderReset(Loader loader) {
     }
 
+
+    // ViewBindContract
     @Override
     public void showWords(List<Word> words) {
         editWordAdapter = new EditWordAdapter(this,words,this);
@@ -241,12 +247,29 @@ public class WordListActivity extends AppCompatActivity
         }
     }
 
+    // Logic for presenter
+    private void editWord(Word oldWord,Word word) {
 
+        Log.i("ListActivity","EditWord-" + word.toString());
+        WordEditBackground wordEditBackground = new WordEditBackground(this,oldWord,word);
+        wordEditBackground.execute();
 
-    @Override
-    public void callBack(SelectedWord selectedWord) {
-        List<Word> selectedItems = editWordAdapter.getSelectedWords();
+        editWordAdapter.editWord(oldWord,word);
+
+        int s = words.indexOf(oldWord);
+        words.get(s).setEngVersion(word.getEngVersion());
+        words.get(s).setUaVersion(word.getUaVersion());
+
 
     }
+
+
+    // Invoke fragment for edit word
+    @Override
+    public void onEditClick(Word selectedWord) {
+        EditDialog editDialog = EditDialog.newInstance(selectedWord);
+        editDialog.show(getFragmentManager(),"edit");
+    }
+
 
 }

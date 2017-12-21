@@ -22,6 +22,7 @@ import static com.artembashtovyi.mywordlist.data.sqlite.DbHelper.Words.TABLE_WOR
 
 
 public class DbHelper extends SQLiteOpenHelper {
+    private static final String TAG = "DbHelper";
 
     private static final String TEXT_TYPE = " TEXT";
     private static final String INTEGER_TYPE = " INTEGER";
@@ -51,23 +52,17 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
 
-    public void deleteWords(List<Integer> ids) {
+    public void deleteWords(List<Word> delete) {
+        Log.i(TAG,"deleteWords");
         SQLiteDatabase db = this.getWritableDatabase();
 
         try {
-            StringBuilder stringBuilder = new StringBuilder();
-            Iterator<Integer> iterator = ids.iterator();
-            while (iterator.hasNext()) {
-                stringBuilder.append(iterator.next());
-                if (iterator.hasNext()) {
-                    stringBuilder.append(",");
-                }
+            for (Word aDelete : delete) {
+                db.delete(TABLE_WORDS,
+                        Words.COLUMN_NAME_ENG_VERSION + " = ? AND " + Words.COLUMN_NAME_UA_VERSION + " = ?",
+                        new String[] {aDelete.getEngVersion(), aDelete.getUaVersion()+""});
             }
 
-            Log.i("DbHelper", "DeleteWords SQL " + stringBuilder.toString());
-            db.execSQL(String.format("DELETE FROM " + Words.TABLE_WORDS +
-                    " WHERE " + Words._ID + " IN (%s);", stringBuilder.toString()));
-            db.close();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -75,8 +70,32 @@ public class DbHelper extends SQLiteOpenHelper {
         }
     }
 
+
+    public void editWord(Word oldWord,Word newWord) {
+        Log.i(TAG,"OldWord" + oldWord.toString());
+        Log.i(TAG,"NewWord" + newWord.toString());
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN_NAME_ENG_VERSION,newWord.getEngVersion());
+        contentValues.put(COLUMN_NAME_UA_VERSION,newWord.getUaVersion());
+
+        try {
+            
+            db.update(TABLE_WORDS,contentValues, Words.COLUMN_NAME_ENG_VERSION + " = ? AND " + Words.COLUMN_NAME_UA_VERSION + " = ?",
+                    new String[] {oldWord.getEngVersion(), oldWord.getUaVersion()+""});
+
+        } catch (Exception e ) {
+            e.printStackTrace();
+        } finally {
+            db.close();
+        }
+    }
+
+
     public List<Word> getWords(Query query) {
-        Log.i("DbHelper","getAllWords");
+        Log.i(TAG,"getAllWords");
         List<Word> words = new ArrayList<>();
 
         SQLiteDatabase db = this.getReadableDatabase();
@@ -96,7 +115,7 @@ public class DbHelper extends SQLiteOpenHelper {
             }
 
         } catch (Exception e) {
-            Log.d("SQLite","Error get All Words");
+            Log.d(TAG,"Error get All Words");
             e.printStackTrace();
         } finally {
             cursor.close();
@@ -123,7 +142,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
             long rowId =
                     db.insert(TABLE_WORDS, null, contentValues);
-            Log.i("DbHelper addWord","id" + rowId);
+            Log.i(TAG," id -- row " + rowId);
         } catch (Exception e){
             e.printStackTrace();
         }

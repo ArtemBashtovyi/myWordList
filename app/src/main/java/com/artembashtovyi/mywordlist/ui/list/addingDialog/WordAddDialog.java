@@ -48,8 +48,8 @@ public class WordAddDialog extends DialogFragment {
         View myLayout = inflater.inflate(R.layout.fragment_dialog_adding_word, null);
         builder.setView(myLayout)
                 .setPositiveButton("ok", (dialogInterface, i) -> {
-                    EditText engVersionEt = myLayout.findViewById(R.id.engVersion);
-                    EditText uaVersionEt = myLayout.findViewById(R.id.uaVersion);
+                    EditText engVersionEt = (EditText) myLayout.findViewById(R.id.engVersion);
+                    EditText uaVersionEt = (EditText) myLayout.findViewById(R.id.uaVersion);
 
                     Word word = new Word();
                     word.setEngVersion(engVersionEt.getText().toString());

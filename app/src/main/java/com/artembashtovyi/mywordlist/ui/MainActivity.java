@@ -19,7 +19,7 @@ import com.artembashtovyi.mywordlist.R;
 import com.artembashtovyi.mywordlist.data.model.Word;
 import com.artembashtovyi.mywordlist.data.sqlite.DbHelper;
 import com.artembashtovyi.mywordlist.data.sqlite.query.RecentWordsQuery;
-import com.artembashtovyi.mywordlist.ui.list.WordListActivity;
+import com.artembashtovyi.mywordlist.ui.list.EditListActivity;
 
 import java.util.List;
 
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void showWords(List<Word> words) {
-        Log.i("WordListActivity","cachedWords ");
+        Log.i("EditListActivity","cachedWords ");
         for(Word word : words) {
             Log.i("row-",word.toString());
         }
@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_camera) {
             // Handle the camera action
         } else if (id == R.id.nav_gallery) {
-            WordListActivity.start(this);
+            EditListActivity.start(this);
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {

@@ -24,12 +24,7 @@ public class WordDeleteBackground extends AsyncTask<Void,Void,Void>{
     protected Void doInBackground(Void... aVoid) {
         try {
             DbHelper dbHelper = new DbHelper(context);
-
-            List<Integer> ids = new ArrayList<>();
-            for (Word word : words) {
-                ids.add(word.getId());
-            }
-            dbHelper.deleteWords(ids);
+            dbHelper.deleteWords(words);
         } catch (Exception e) {
             e.printStackTrace();
         }

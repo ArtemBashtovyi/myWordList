@@ -1,13 +1,14 @@
 package com.artembashtovyi.mywordlist.data.model;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-
-public class Word {
+public class Word implements Parcelable {
 
     private int id;
     private String engVersion;
     private String uaVersion;
 
-    public Word(int id,  String engVersion,  String uaVersion) {
+    public Word(int id, String engVersion,  String uaVersion) {
         this.id = id;
         this.engVersion = engVersion;
         this.uaVersion = uaVersion;
@@ -16,6 +17,24 @@ public class Word {
     public Word() {
     }
 
+
+    protected Word(Parcel in) {
+        id = in.readInt();
+        engVersion = in.readString();
+        uaVersion = in.readString();
+    }
+
+    public static final Creator<Word> CREATOR = new Creator<Word>() {
+        @Override
+        public Word createFromParcel(Parcel in) {
+            return new Word(in);
+        }
+
+        @Override
+        public Word[] newArray(int size) {
+            return new Word[size];
+        }
+    };
 
     public int getId() {
         return id;
@@ -67,5 +86,17 @@ public class Word {
         int result = engVersion.hashCode();
         result = 31 * result + uaVersion.hashCode() * 39;
         return result;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(id);
+        parcel.writeString(engVersion);
+        parcel.writeString(uaVersion);
     }
 }

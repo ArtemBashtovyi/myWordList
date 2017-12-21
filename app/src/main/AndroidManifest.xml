@@ -20,9 +20,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.list.WordListActivity"
+            android:name=".ui.list.EditListActivity"
             android:label="@string/title_activity_word_list"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar">
+
+        </activity>
     </application>
 
 </manifest>
