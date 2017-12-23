@@ -19,7 +19,7 @@ import com.artembashtovyi.mywordlist.R;
 import com.artembashtovyi.mywordlist.data.model.Word;
 import com.artembashtovyi.mywordlist.data.sqlite.DbHelper;
 import com.artembashtovyi.mywordlist.data.sqlite.query.RecentWordsQuery;
-import com.artembashtovyi.mywordlist.ui.list.EditListActivity;
+import com.artembashtovyi.mywordlist.ui.edit.EditListActivity;
 
 import java.util.List;
 
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             protected List<Word> doInBackground(Void... voids) {
                 DbHelper dbHelper = new DbHelper(MainActivity.this);
-                return dbHelper.getWords(new RecentWordsQuery(20));
+                return dbHelper.getWords(new RecentWordsQuery(3));
             }
 
             @Override
@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity
                 super.onPostExecute(words);
                 showWords(words);
             }
+
         }.execute();
     }
 

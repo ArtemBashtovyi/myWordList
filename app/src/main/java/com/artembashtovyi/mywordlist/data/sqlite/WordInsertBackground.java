@@ -20,16 +20,14 @@ public class WordInsertBackground extends AsyncTask<Void,Void,Void>{
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-
     }
 
     @Override
     protected Void doInBackground(Void... aVoid) {
-        DbHelper dbHelper = new DbHelper(context);
-        dbHelper.addWord(word);
+        /*DbHelper dbHelper = new DbHelper(context);
+        dbHelper.addWord(word);*/
         return null;
     }
-
 
     @Override
     protected void onPostExecute(Void aVoid) {

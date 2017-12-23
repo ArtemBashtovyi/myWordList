@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.list.EditListActivity"
+            android:name=".ui.edit.EditListActivity"
             android:label="@string/title_activity_word_list"
             android:theme="@style/AppTheme.NoActionBar">
 

@@ -23,8 +23,8 @@ public class WordDeleteBackground extends AsyncTask<Void,Void,Void>{
     @Override
     protected Void doInBackground(Void... aVoid) {
         try {
-            DbHelper dbHelper = new DbHelper(context);
-            dbHelper.deleteWords(words);
+           /* DbHelper dbHelper = new DbHelper(context);
+            dbHelper.deleteWords(words);*/
         } catch (Exception e) {
             e.printStackTrace();
         }

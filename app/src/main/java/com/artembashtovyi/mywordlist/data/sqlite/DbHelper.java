@@ -12,7 +12,6 @@ import com.artembashtovyi.mywordlist.data.model.Word;
 import com.artembashtovyi.mywordlist.data.sqlite.query.Query;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import static com.artembashtovyi.mywordlist.data.sqlite.DbHelper.Words.COLUMN_NAME_ENG_VERSION;
@@ -29,13 +28,23 @@ public class DbHelper extends SQLiteOpenHelper {
     private static final String PRIMARY_KEY = " PRIMARY KEY";
     private static final String AUTO_INCREMENT = " AUTOINCREMENT";
 
-
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "wordList.db";
 
-    public DbHelper(Context context) {
+    private static DbHelper INSTANCE = null;
+
+    private DbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
+
+    public static DbHelper getInstance(Context context) {
+        if (INSTANCE == null) {
+            INSTANCE = new DbHelper(context.getApplicationContext());
+        }
+        return INSTANCE;
+    }
+
+
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
@@ -83,7 +92,8 @@ public class DbHelper extends SQLiteOpenHelper {
 
         try {
             
-            db.update(TABLE_WORDS,contentValues, Words.COLUMN_NAME_ENG_VERSION + " = ? AND " + Words.COLUMN_NAME_UA_VERSION + " = ?",
+            db.update(TABLE_WORDS,contentValues, Words.COLUMN_NAME_ENG_VERSION + " = ? AND "
+                            + Words.COLUMN_NAME_UA_VERSION + " = ?",
                     new String[] {oldWord.getEngVersion(), oldWord.getUaVersion()+""});
 
         } catch (Exception e ) {
@@ -132,13 +142,14 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     // TODO : implement check ' character
-    void addWord(Word word){
+    public void addWord(Word word){
         SQLiteDatabase db = this.getWritableDatabase();
 
         try {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(COLUMN_NAME_ENG_VERSION,word.getEngVersion());
-        contentValues.put(COLUMN_NAME_UA_VERSION,word.getUaVersion());
+
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(COLUMN_NAME_ENG_VERSION,word.getEngVersion());
+            contentValues.put(COLUMN_NAME_UA_VERSION,word.getUaVersion());
 
             long rowId =
                     db.insert(TABLE_WORDS, null, contentValues);
@@ -152,6 +163,11 @@ public class DbHelper extends SQLiteOpenHelper {
 
     }
 
+
+    @Override
+    public synchronized void close() {
+        super.close();
+    }
 
     /* Entity */
     public static class Words implements BaseColumns {
@@ -167,7 +183,6 @@ public class DbHelper extends SQLiteOpenHelper {
                         "," + COLUMN_NAME_UA_VERSION + TEXT_TYPE /*+ "(45)"*/ + ")";
 
         public static final String SQL_DROP_WORDS_TABLE = "DROP TABLE " + TABLE_WORDS;
-
     }
 
 

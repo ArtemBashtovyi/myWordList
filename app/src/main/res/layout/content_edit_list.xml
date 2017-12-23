@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.artembashtovyi.mywordlist.ui.list.EditListActivity"
+    tools:context="com.artembashtovyi.mywordlist.ui.edit.EditListActivity"
     tools:showIn="@layout/content_edit_list">
 
 

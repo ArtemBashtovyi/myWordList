@@ -1,4 +1,4 @@
-package com.artembashtovyi.mywordlist.ui.list;
+package com.artembashtovyi.mywordlist.ui.edit;
 
 
 
@@ -11,10 +11,10 @@ import com.artembashtovyi.mywordlist.data.sqlite.query.AllWordsQuery;
 
 import java.util.List;
 
-public class WordListLoader extends AsyncTaskLoader<List<Word>> {
+public class EditListLoader extends AsyncTaskLoader<List<Word>> {
     private Context context;
 
-    public WordListLoader(Context context) {
+    public EditListLoader(Context context) {
         super(context);
         this.context = context;
     }

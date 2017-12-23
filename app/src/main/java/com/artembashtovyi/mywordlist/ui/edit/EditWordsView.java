@@ -1,10 +1,10 @@
-package com.artembashtovyi.mywordlist.ui.list;
+package com.artembashtovyi.mywordlist.ui.edit;
 
 
 import com.artembashtovyi.mywordlist.data.model.Word;
 import java.util.List;
 
-public interface WordsView {
+public interface EditWordsView {
 
     void showWords(List<Word> words);
 
@@ -12,5 +12,10 @@ public interface WordsView {
 
     void showAddedWord(Word word);
 
+    void showEditedWord(Word oldWord,Word newWord);
+
     void scrollListDown();
+
+    void showAddDialog();
+
 }

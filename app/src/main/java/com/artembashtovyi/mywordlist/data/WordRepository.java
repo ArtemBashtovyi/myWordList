@@ -1,37 +1,45 @@
 package com.artembashtovyi.mywordlist.data;
 
 
-import android.util.Log;
+import android.content.Context;
 
 import com.artembashtovyi.mywordlist.data.model.Word;
+import com.artembashtovyi.mywordlist.data.sqlite.DbHelper;
+import com.artembashtovyi.mywordlist.data.sqlite.query.Query;
 
-import java.util.ArrayList;
 import java.util.List;
-// imlp Word DTO
-public class WordRepository implements RepositoryContract<Word> {
 
+public class WordRepository  {
 
-    // emulate DAO entity
-    private List<Word> words = null;
+    private static WordRepository INSTANCE;
+    private DbHelper dbHelper;
 
-    {
-        words = new ArrayList<>();
-       /* words.add(new Word("ought","повинен"));
-        words.add(new Word("determine","визначати"));
-        words.add(new Word("unfortunately","на жаль"));*/
+    private WordRepository(Context context,DbHelper dbHelper) {
+        this.dbHelper = dbHelper;
+
     }
 
-
-    // emulate database
-    @Override
-    public List<Word> getWords() {
-        Log.i("Repository","getWords");
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    public static WordRepository getInstanse(Context context,DbHelper dbHelper) {
+        if (INSTANCE == null) {
+            INSTANCE = new WordRepository(context.getApplicationContext(),dbHelper);
         }
-        return words;
+        return INSTANCE;
+    }
+
+    public void addWord(Word word) {
+        dbHelper.addWord(word);
+    }
+
+    public void deleteWords(List<Word> words) {
+        dbHelper.deleteWords(words);
+    }
+
+    public List<Word> getWords(Query query) {
+        return dbHelper.getWords(query);
+    }
+
+    public void editWord(Word oldWord,Word newWord) {
+        dbHelper.editWord(oldWord,newWord);
     }
 
 }

@@ -1,4 +1,4 @@
-package com.artembashtovyi.mywordlist.ui.list.addingDialog;
+package com.artembashtovyi.mywordlist.ui.edit.addingDialog;
 
 
 import android.app.Dialog;

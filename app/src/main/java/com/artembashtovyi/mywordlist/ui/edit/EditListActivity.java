@@ -1,4 +1,4 @@
-package com.artembashtovyi.mywordlist.ui.list;
+package com.artembashtovyi.mywordlist.ui.edit;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,33 +12,28 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
 import com.artembashtovyi.mywordlist.R;
+import com.artembashtovyi.mywordlist.data.WordRepository;
 import com.artembashtovyi.mywordlist.data.model.Word;
-import com.artembashtovyi.mywordlist.data.sqlite.WordDeleteBackground;
-import com.artembashtovyi.mywordlist.data.sqlite.WordInsertBackground;
-import com.artembashtovyi.mywordlist.data.sqlite.WordEditBackground;
+import com.artembashtovyi.mywordlist.data.sqlite.DbHelper;
 import com.artembashtovyi.mywordlist.ui.adapter.editHolder.EditWordAdapter;
-import com.artembashtovyi.mywordlist.ui.list.addingDialog.EditDialog;
-import com.artembashtovyi.mywordlist.ui.list.addingDialog.WordAddDialog;
+import com.artembashtovyi.mywordlist.ui.edit.addingDialog.EditDialog;
+import com.artembashtovyi.mywordlist.ui.edit.addingDialog.WordAddDialog;
 
-import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class EditListActivity extends AppCompatActivity
-        implements WordsView,LoaderManager.LoaderCallbacks<List<Word>>,WordAddDialog.NoticeDialogListener,
+        implements EditWordsView,LoaderManager.LoaderCallbacks<List<Word>>,WordAddDialog.NoticeDialogListener,
         EditWordAdapter.OnViewClickListener,EditDialog.NoticeDialogListener {
 
     private final static int LOADER_ID = 101;
@@ -58,10 +53,13 @@ public class EditListActivity extends AppCompatActivity
     @BindView(R.id.image_delete)
     ImageView imageDelete;
 
+
+    private DbHelper dbHelper;
+    private EditListPresenter presenter;
+    private WordRepository repository;
     private EditWordAdapter editWordAdapter;
 
     private List<Word> words;
-    private ActionMode actionMode;
 
     public static void start(@NonNull Context context) {
         Intent intent = new Intent(context,EditListActivity.class);
@@ -69,7 +67,7 @@ public class EditListActivity extends AppCompatActivity
     }
 
     // TODO : ON THIS SCREEN ONLY FULL VERSION
-    // TODO :  IMPL COMPARABLE
+    // TODO : IMPL COMPARABLE
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,33 +77,39 @@ public class EditListActivity extends AppCompatActivity
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
+
         getSupportLoaderManager().initLoader(LOADER_ID,null,this);
 
-        fab.setOnClickListener(view ->  {
+        dbHelper = DbHelper.getInstance(this);
 
-            WordAddDialog fragment =  WordAddDialog.newInstance();
-            fragment.show(getFragmentManager(),"WordAddingDialog");
+        repository = WordRepository.getInstanse(this,dbHelper);
+        presenter = new EditListPresenter(this,repository);
+
+
+        fab.setOnClickListener(view ->  {
+            showAddDialog();
         });
 
         LinearLayoutManager llm = new LinearLayoutManager(this);
         wordsRv.setLayoutManager(llm);
 
-
         // Adapter for list clauses in spinner
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.spinner_list_item_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
         spinner.setAdapter(adapter);
 
         imageDelete.setOnClickListener(view -> {
             List<Word> selectedWords = editWordAdapter.getSelectedWords();
-            deleteWords(selectedWords);
+           // deleteWords(selectedWords);
             editWordAdapter.setSelectedWords(words);
         });
 
     }
 
-    void initSpinnerListener(){
+    /*void initSpinnerListener(){
+
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long l) {
@@ -138,11 +142,10 @@ public class EditListActivity extends AppCompatActivity
 
             }
         });
-    }
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.activity_list_menu, menu);
         return true;
     }
@@ -163,25 +166,23 @@ public class EditListActivity extends AppCompatActivity
     }
 
 
-
-
     // AddDialog callback
     @Override
     public void onPositiveClick(Word word) {
-        addWord(word);
+        presenter.addWord(word);
     }
 
     // EditDialog callback
     @Override
     public void onEditPositiveClick(Word oldWord,Word word) {
-        editWord(oldWord,word);
+        presenter.editWord(oldWord,word);
     }
 
 
-    // Loader callbacks
+    // BaseLoader callbacks
     @Override
     public Loader<List<Word>> onCreateLoader(int id, Bundle args) {
-        return new WordListLoader(this);
+        return new EditListLoader(this);
     }
 
     @Override
@@ -218,49 +219,21 @@ public class EditListActivity extends AppCompatActivity
         editWordAdapter.addWord(word);
     }
 
+    @Override
+    public void showEditedWord(Word oldWord,Word newWord) {
+        editWordAdapter.editWord(oldWord,newWord);
+    }
+
     // TODO : Animation Scrolling
     public void scrollListDown(){
         wordsRv.scrollToPosition(editWordAdapter.getItemCount() - 1);
     }
 
-    // Logic for presenter
-    private void deleteWords(List<Word> selectedWords) {
-        if (selectedWords != null) {
-            words.removeAll(selectedWords);
-            new WordDeleteBackground(this,selectedWords).execute();
-        }
 
-    }
-
-    // Logic for presenter
-    private void addWord(Word word) {
-        if (!words.contains(word)) {
-
-            new WordInsertBackground(getApplicationContext(), word).execute();
-            showAddedWord(word);
-            words.add(word);
-            scrollListDown();
-
-            Log.i("ListActivity", "New Word has been added");
-        } else {
-            showError();
-        }
-    }
-
-    // Logic for presenter
-    private void editWord(Word oldWord,Word word) {
-
-        Log.i("ListActivity","EditWord-" + word.toString());
-        WordEditBackground wordEditBackground = new WordEditBackground(this,oldWord,word);
-        wordEditBackground.execute();
-
-        editWordAdapter.editWord(oldWord,word);
-
-        int s = words.indexOf(oldWord);
-        words.get(s).setEngVersion(word.getEngVersion());
-        words.get(s).setUaVersion(word.getUaVersion());
-
-
+    @Override
+    public void showAddDialog() {
+        WordAddDialog fragment =  WordAddDialog.newInstance();
+        fragment.show(getFragmentManager(),"WordAddingDialog");
     }
 
 
@@ -271,5 +244,14 @@ public class EditListActivity extends AppCompatActivity
         editDialog.show(getFragmentManager(),"edit");
     }
 
+    void addWord(Word word) {
+        presenter.addWord(word);
+    }
 
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        dbHelper.close();
+    }
 }
