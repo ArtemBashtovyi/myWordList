@@ -7,7 +7,7 @@ import com.artembashtovyi.mywordlist.ui.adapter.editHolder.EditHolder;
 
 import java.util.List;
 
-public class UaVersionView implements ViewBindContract {
+public class  UaVersionView implements ViewBindContract {
 
     @Override
     public void initializeView(List<Word> words, WordHolder holder, int position) {

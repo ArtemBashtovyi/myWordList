@@ -13,9 +13,9 @@ public class RecentWordsQuery implements Query {
     }
 
     @Override
-    public String getSqlQuery() {
+    public String getSqlQuery(String tableName) {
 
-        return "SELECT * FROM " + DbHelper.Words.TABLE_WORDS
+        return "SELECT * FROM " + tableName
                 + " ORDER BY " + DbHelper.Words._ID + " DESC LIMIT " + countWords;
     }
 

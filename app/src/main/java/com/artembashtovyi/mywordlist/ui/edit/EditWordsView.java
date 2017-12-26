@@ -14,8 +14,11 @@ public interface EditWordsView {
 
     void showEditedWord(Word oldWord,Word newWord);
 
-    void scrollListDown();
-
     void showAddDialog();
+
+    void showEditDialog(Word oldWord);
+
+    void showEditedWordList(List<Word> words);
+
 
 }

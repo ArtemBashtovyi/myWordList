@@ -16,10 +16,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.artembashtovyi.mywordlist.R;
+import com.artembashtovyi.mywordlist.data.WordRepository;
 import com.artembashtovyi.mywordlist.data.model.Word;
 import com.artembashtovyi.mywordlist.data.sqlite.DbHelper;
 import com.artembashtovyi.mywordlist.data.sqlite.query.RecentWordsQuery;
 import com.artembashtovyi.mywordlist.ui.edit.EditListActivity;
+import com.artembashtovyi.mywordlist.ui.list.WordListActivity;
 
 import java.util.List;
 
@@ -54,8 +56,9 @@ public class MainActivity extends AppCompatActivity
         new AsyncTask<Void,Void,List<Word>>() {
             @Override
             protected List<Word> doInBackground(Void... voids) {
-                DbHelper dbHelper = new DbHelper(MainActivity.this);
-                return dbHelper.getWords(new RecentWordsQuery(3));
+                DbHelper dbHelper = DbHelper.getInstance(getApplicationContext());
+                WordRepository wordRepository = WordRepository.getInstance(dbHelper);
+                return wordRepository.getWords(new RecentWordsQuery(5));
             }
 
             @Override
@@ -116,7 +119,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_gallery) {
             EditListActivity.start(this);
         } else if (id == R.id.nav_slideshow) {
-
+            WordListActivity.start(this);
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {

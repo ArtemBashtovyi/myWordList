@@ -4,17 +4,21 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 
 import com.artembashtovyi.mywordlist.R;
 import com.artembashtovyi.mywordlist.data.model.Word;
 
-
+import java.util.ArrayList;
 import java.util.List;
 
-public class WordAdapter extends RecyclerView.Adapter<WordHolder>{
+public class WordAdapter extends RecyclerView.Adapter<WordHolder> implements Filterable {
+
 
     private ViewBindContract viewBindContract;
     private List<Word> words;
+    private List<Word> filteredWords;
     private Context context;
     private OnWordClickListener onWordListener;
 
@@ -24,6 +28,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordHolder>{
         this.viewBindContract = viewBindContract;
         this.context = context;
         this.words = words;
+        this.filteredWords = words;
         this.onWordListener = onWordListener;
     }
 
@@ -42,17 +47,16 @@ public class WordAdapter extends RecyclerView.Adapter<WordHolder>{
 
     @Override
     public void onBindViewHolder(WordHolder holder, int position) {
-        viewBindContract.initializeView(words,holder,position);
+        viewBindContract.initializeView(filteredWords,holder,position);
 
         holder.rootView.setOnClickListener(viewOnClickListener);
-        holder.rootView.setTag(words.get(position));
+        holder.rootView.setTag(filteredWords.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return words == null ? 0 : words.size();
+        return filteredWords == null ? 0 : filteredWords.size();
     }
-
 
 
     // change Contract when languageMode changed
@@ -61,8 +65,48 @@ public class WordAdapter extends RecyclerView.Adapter<WordHolder>{
         notifyDataSetChanged();
     }
 
-
     public interface OnWordClickListener {
-        public void clickCallBack(Word word);
+        void clickCallBack(Word word);
     }
+
+
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String charString = charSequence.toString();
+                if (charString.isEmpty()) {
+
+                    // if editField isEmpty - set all words
+                    filteredWords = words;
+                } else {
+                    List<Word> filteredList = new ArrayList<>();
+                    for (Word row : words) {
+
+                        // engVersion match condition. this might differ depending on your requirement
+                        // here we are looking for engVersion or uaVersion
+                        if (row.getEngVersion().toLowerCase().contains(charString.toLowerCase())
+                                || row.getEngVersion().toLowerCase().contains(charString.toLowerCase())) {
+                            filteredList.add(row);
+                        }
+                    }
+
+                    filteredWords = filteredList;
+                }
+
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = filteredWords;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                filteredWords = (ArrayList<Word>) filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
+    }
+
 }

@@ -12,10 +12,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
@@ -33,10 +33,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class EditListActivity extends AppCompatActivity
-        implements EditWordsView,LoaderManager.LoaderCallbacks<List<Word>>,WordAddDialog.NoticeDialogListener,
+        implements EditWordsView,LoaderManager.LoaderCallbacks<EditListPresenter>,WordAddDialog.NoticeDialogListener,
         EditWordAdapter.OnViewClickListener,EditDialog.NoticeDialogListener {
 
     private final static int LOADER_ID = 101;
+    private final static String TAG = "EditListActivity";
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -54,20 +55,15 @@ public class EditListActivity extends AppCompatActivity
     ImageView imageDelete;
 
 
-    private DbHelper dbHelper;
     private EditListPresenter presenter;
-    private WordRepository repository;
+
     private EditWordAdapter editWordAdapter;
 
-    private List<Word> words;
 
     public static void start(@NonNull Context context) {
         Intent intent = new Intent(context,EditListActivity.class);
         context.startActivity(intent);
     }
-
-    // TODO : ON THIS SCREEN ONLY FULL VERSION
-    // TODO : IMPL COMPARABLE
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,72 +73,36 @@ public class EditListActivity extends AppCompatActivity
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
-
-        getSupportLoaderManager().initLoader(LOADER_ID,null,this);
-
-        dbHelper = DbHelper.getInstance(this);
-
-        repository = WordRepository.getInstanse(this,dbHelper);
-        presenter = new EditListPresenter(this,repository);
-
-
-        fab.setOnClickListener(view ->  {
-            showAddDialog();
-        });
+        fab.setOnClickListener(view -> showAddDialog());
 
         LinearLayoutManager llm = new LinearLayoutManager(this);
         wordsRv.setLayoutManager(llm);
 
-        // Adapter for list clauses in spinner
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.spinner_list_item_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        spinner.setAdapter(adapter);
+        Loader<EditListPresenter> loader = getSupportLoaderManager().getLoader(LOADER_ID);
+
+        if (loader == null) {
+            getSupportLoaderManager().initLoader(LOADER_ID, null, this);
+        } else {
+            presenter = ((EditListLoader) loader).getPresenter();
+        }
 
         imageDelete.setOnClickListener(view -> {
-            List<Word> selectedWords = editWordAdapter.getSelectedWords();
-           // deleteWords(selectedWords);
-            editWordAdapter.setSelectedWords(words);
+            if (editWordAdapter != null) {
+                List<Word> selectedWords = editWordAdapter.getSelectedWords();
+                presenter.deleteWords(selectedWords);
+
+            }
         });
 
     }
 
-    /*void initSpinnerListener(){
-
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long l) {
-                String selectedItem = adapterView.getItemAtPosition(pos).toString();
-                Log.i("Selected Item",selectedItem);
-
-                switch (selectedItem) {
-                    case "By Date":
-                        Collections.sort(words, (word1, word2) -> {
-                            if (word1.getId() < word2.getId()) {
-                                return 1;
-                            } else if (word1.getId() > word2.getId())
-                                return -1;
-                            return 0;
-                        });
-                        break;
-                    case "By Ukr":
-                        Collections.sort(words, ((word1, word2) -> word1.getUaVersion().compareTo(word2.getUaVersion())));
-                        break;
-                    case "By Eng":
-                        Collections.sort(words, (word1, word2) -> word1.getEngVersion().compareTo(word2.getEngVersion()));
-                        break;
-                }
-
-                editWordAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-    }*/
+    @Override
+    protected void onStart() {
+        super.onStart();
+        presenter.onViewAttached(this);
+        presenter.getAllWords();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -153,15 +113,7 @@ public class EditListActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
-        /*if (id == R.id.action_ua_version) {
-            editWordAdapter.changeContract(new UaVersionView());
-        } else if (id == R.id.action_eng_version) {
-            editWordAdapter.changeContract(new EngVersionView());
-        } else if (id == R.id.action_full_version) {
-            editWordAdapter.changeContract(new FullVersionView());
-        }*/
-
+        presenter.sortWords(id);
         return super.onOptionsItemSelected(item);
     }
 
@@ -178,31 +130,10 @@ public class EditListActivity extends AppCompatActivity
         presenter.editWord(oldWord,word);
     }
 
-
-    // BaseLoader callbacks
-    @Override
-    public Loader<List<Word>> onCreateLoader(int id, Bundle args) {
-        return new EditListLoader(this);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<List<Word>> loader, List<Word> data) {
-        // TODO: presenter logic
-        words = data;
-        showWords(words);
-
-        // FIXME: 12/15/17 stupid solution
-        //initSpinnerListener();
-    }
-
-    @Override
-    public void onLoaderReset(Loader loader) {
-    }
-
-
     // ViewBindContract
     @Override
     public void showWords(List<Word> words) {
+        Log.i(TAG,"showWords");
         editWordAdapter = new EditWordAdapter(this,words,this);
         wordsRv.setAdapter(editWordAdapter);
     }
@@ -214,18 +145,22 @@ public class EditListActivity extends AppCompatActivity
                 .setAction("Action", null).show();
     }
 
+
     @Override
     public void showAddedWord(Word word) {
+        Log.i(TAG,"showAddedWord");
         editWordAdapter.addWord(word);
+        scrollListDown();
     }
 
     @Override
     public void showEditedWord(Word oldWord,Word newWord) {
+        Log.i(TAG,"showEditedWord");
         editWordAdapter.editWord(oldWord,newWord);
     }
 
     // TODO : Animation Scrolling
-    public void scrollListDown(){
+    private void scrollListDown(){
         wordsRv.scrollToPosition(editWordAdapter.getItemCount() - 1);
     }
 
@@ -236,6 +171,17 @@ public class EditListActivity extends AppCompatActivity
         fragment.show(getFragmentManager(),"WordAddingDialog");
     }
 
+    @Override
+    public void showEditDialog(Word oldWord) {
+        EditDialog editDialog = EditDialog.newInstance(oldWord);
+        editDialog.show(getFragmentManager(),"WordEditDialog");
+    }
+
+    @Override
+    public void showEditedWordList(List<Word> words) {
+        editWordAdapter.setSelectedWords(words);
+    }
+
 
     // Invoke fragment for edit word
     @Override
@@ -244,14 +190,37 @@ public class EditListActivity extends AppCompatActivity
         editDialog.show(getFragmentManager(),"edit");
     }
 
-    void addWord(Word word) {
-        presenter.addWord(word);
+
+    // free presenter reference
+    @Override
+    protected void onStop() {
+        super.onStop();
+        editWordAdapter = null;
+        presenter.onViewDetached();
     }
 
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        dbHelper.close();
+    public Loader<EditListPresenter> onCreateLoader(int id, Bundle args) {
+        DbHelper dbHelper = DbHelper.getInstance(getApplicationContext());
+        WordRepository wordRepository = WordRepository.getInstance(dbHelper);
+        presenter = new EditListPresenter(this,wordRepository);
+        return new EditListLoader(EditListActivity.this,presenter);
     }
+
+    @Override
+    public void onLoadFinished(Loader<EditListPresenter> loader, EditListPresenter data) {
+        presenter = data;
+        Log.i(TAG,"onLoadFinished");
+    }
+
+    @Override
+    public void onLoaderReset(Loader<EditListPresenter> loader) {
+        presenter.onDestroy();
+        presenter = null;
+    }
+
+
+
+
 }

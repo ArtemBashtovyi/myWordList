@@ -14,6 +14,8 @@ import com.artembashtovyi.mywordlist.data.sqlite.query.Query;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.artembashtovyi.mywordlist.data.sqlite.DbHelper.FavoriteWords.SQL_CREATE_FAVORITE_WORDS_TABLE;
+import static com.artembashtovyi.mywordlist.data.sqlite.DbHelper.FavoriteWords.TABLE_FAVORITE_WORDS;
 import static com.artembashtovyi.mywordlist.data.sqlite.DbHelper.Words.COLUMN_NAME_ENG_VERSION;
 import static com.artembashtovyi.mywordlist.data.sqlite.DbHelper.Words.COLUMN_NAME_UA_VERSION;
 import static com.artembashtovyi.mywordlist.data.sqlite.DbHelper.Words.SQL_CREATE_WORDS_TABLE;
@@ -49,17 +51,49 @@ public class DbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL(SQL_CREATE_WORDS_TABLE);
-
+        sqLiteDatabase.execSQL(SQL_CREATE_FAVORITE_WORDS_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion != newVersion) {
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_WORDS);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_FAVORITE_WORDS);
             onCreate(db);
         }
     }
 
+    public boolean isFavorite(Word word) {
+        Log.i(TAG,"isFavorite");
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        String query = "Select * from " + TABLE_FAVORITE_WORDS + " where " +
+                COLUMN_NAME_ENG_VERSION + " = '" + word.getEngVersion() + "' AND "+
+                COLUMN_NAME_UA_VERSION + " = '" + word.getUaVersion() + "'";
+        Cursor cursor = db.rawQuery(query, null);
+
+        if(cursor.getCount() <= 0){
+            cursor.close();
+            return false;
+        }
+        cursor.close();
+        return true;
+    }
+
+    public void deleteWord(Word word,String tableName) {
+        Log.i(TAG,"deleteWord");
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        try {
+            db.delete(tableName,
+                    Words.COLUMN_NAME_ENG_VERSION + " = ? AND " + Words.COLUMN_NAME_UA_VERSION + " = ?",
+                    new String[] {word.getEngVersion(), word.getUaVersion()+""});
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.close();
+        }
+    }
 
     public void deleteWords(List<Word> delete) {
         Log.i(TAG,"deleteWords");
@@ -91,7 +125,6 @@ public class DbHelper extends SQLiteOpenHelper {
         contentValues.put(COLUMN_NAME_UA_VERSION,newWord.getUaVersion());
 
         try {
-            
             db.update(TABLE_WORDS,contentValues, Words.COLUMN_NAME_ENG_VERSION + " = ? AND "
                             + Words.COLUMN_NAME_UA_VERSION + " = ?",
                     new String[] {oldWord.getEngVersion(), oldWord.getUaVersion()+""});
@@ -104,12 +137,12 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
 
-    public List<Word> getWords(Query query) {
+    public List<Word> getWords(Query query,String tableName) {
         Log.i(TAG,"getAllWords");
         List<Word> words = new ArrayList<>();
 
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(query.getSqlQuery(),null);
+        Cursor cursor = db.rawQuery(query.getSqlQuery(tableName),null);
         // Управляем курсором
 
         try {
@@ -132,27 +165,20 @@ public class DbHelper extends SQLiteOpenHelper {
             db.close();
         }
 
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         return words;
     }
 
     // TODO : implement check ' character
-    public void addWord(Word word){
+    public void addWord(Word word,String tableName){
         SQLiteDatabase db = this.getWritableDatabase();
 
         try {
-
             ContentValues contentValues = new ContentValues();
             contentValues.put(COLUMN_NAME_ENG_VERSION,word.getEngVersion());
             contentValues.put(COLUMN_NAME_UA_VERSION,word.getUaVersion());
 
             long rowId =
-                    db.insert(TABLE_WORDS, null, contentValues);
+                    db.insert(tableName, null, contentValues);
             Log.i(TAG," id -- row " + rowId);
         } catch (Exception e){
             e.printStackTrace();
@@ -169,6 +195,7 @@ public class DbHelper extends SQLiteOpenHelper {
         super.close();
     }
 
+
     /* Entity */
     public static class Words implements BaseColumns {
 
@@ -178,12 +205,25 @@ public class DbHelper extends SQLiteOpenHelper {
 
         static final String SQL_CREATE_WORDS_TABLE =
                 "CREATE TABLE " + TABLE_WORDS + "(" +
-                        Words._ID + INTEGER_TYPE +  PRIMARY_KEY + AUTO_INCREMENT  + //"(6)" +
-                        "," + COLUMN_NAME_ENG_VERSION + TEXT_TYPE + //"(45)" +
-                        "," + COLUMN_NAME_UA_VERSION + TEXT_TYPE /*+ "(45)"*/ + ")";
+                        Words._ID + INTEGER_TYPE +  PRIMARY_KEY + AUTO_INCREMENT  +
+                        "," + COLUMN_NAME_ENG_VERSION + TEXT_TYPE +
+                        "," + COLUMN_NAME_UA_VERSION + TEXT_TYPE + ")";
 
-        public static final String SQL_DROP_WORDS_TABLE = "DROP TABLE " + TABLE_WORDS;
+
     }
 
+
+    public static class FavoriteWords implements BaseColumns{
+
+        public static final String TABLE_FAVORITE_WORDS = "favoriteWords";
+        static final String COLUMN_NAME_ENG_VERSION = "engVersion";
+        static final String COLUMN_NAME_UA_VERSION = "uaVersion";
+
+        static final String SQL_CREATE_FAVORITE_WORDS_TABLE =
+                "CREATE TABLE " + TABLE_FAVORITE_WORDS + "(" +
+                        FavoriteWords._ID + INTEGER_TYPE +  PRIMARY_KEY + AUTO_INCREMENT  +
+                        "," + COLUMN_NAME_ENG_VERSION + TEXT_TYPE +
+                        "," + COLUMN_NAME_UA_VERSION + TEXT_TYPE + ")";
+    }
 
 }
