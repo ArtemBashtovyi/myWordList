@@ -10,6 +10,7 @@ import com.artembashtovyi.mywordlist.data.sqlite.query.Query;
 
 import java.util.List;
 
+// FIXME : Stupid solution with AsyncTasks
 public class WordRepository  {
 
     private static WordRepository INSTANCE;
@@ -41,7 +42,8 @@ public class WordRepository  {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                dbHelper.deleteWords(words);
+                dbHelper.deleteWords(words,DbHelper.Words.TABLE_WORDS);
+                dbHelper.deleteWords(words,DbHelper.FavoriteWords.TABLE_FAVORITE_WORDS);
                 return null;
             }
         }.execute();

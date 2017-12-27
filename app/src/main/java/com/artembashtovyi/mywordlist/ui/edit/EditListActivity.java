@@ -6,9 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -17,13 +14,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Spinner;
 
+import com.artembashtovyi.mywordlist.BaseActivity;
 import com.artembashtovyi.mywordlist.R;
 import com.artembashtovyi.mywordlist.data.WordRepository;
 import com.artembashtovyi.mywordlist.data.model.Word;
-import com.artembashtovyi.mywordlist.data.sqlite.DbHelper;
-import com.artembashtovyi.mywordlist.ui.adapter.editHolder.EditWordAdapter;
+import com.artembashtovyi.mywordlist.ui.adapter.edit.EditWordAdapter;
 import com.artembashtovyi.mywordlist.ui.edit.addingDialog.EditDialog;
 import com.artembashtovyi.mywordlist.ui.edit.addingDialog.WordAddDialog;
 
@@ -32,11 +28,12 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class EditListActivity extends AppCompatActivity
-        implements EditWordsView,LoaderManager.LoaderCallbacks<EditListPresenter>,WordAddDialog.NoticeDialogListener,
+
+public class EditListActivity extends BaseActivity<EditListPresenter,EditWordsView>
+        implements EditWordsView,WordAddDialog.NoticeDialogListener,
         EditWordAdapter.OnViewClickListener,EditDialog.NoticeDialogListener {
 
-    private final static int LOADER_ID = 101;
+    private final static int LOADER_ID = 105;
     private final static String TAG = "EditListActivity";
 
     @BindView(R.id.toolbar)
@@ -48,8 +45,6 @@ public class EditListActivity extends AppCompatActivity
     @BindView(R.id.word_list_recycler_view)
     RecyclerView wordsRv;
 
-    @BindView(R.id.spinner_sorting)
-    Spinner spinner;
 
     @BindView(R.id.image_delete)
     ImageView imageDelete;
@@ -78,15 +73,6 @@ public class EditListActivity extends AppCompatActivity
         LinearLayoutManager llm = new LinearLayoutManager(this);
         wordsRv.setLayoutManager(llm);
 
-
-        Loader<EditListPresenter> loader = getSupportLoaderManager().getLoader(LOADER_ID);
-
-        if (loader == null) {
-            getSupportLoaderManager().initLoader(LOADER_ID, null, this);
-        } else {
-            presenter = ((EditListLoader) loader).getPresenter();
-        }
-
         imageDelete.setOnClickListener(view -> {
             if (editWordAdapter != null) {
                 List<Word> selectedWords = editWordAdapter.getSelectedWords();
@@ -100,7 +86,6 @@ public class EditListActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-        presenter.onViewAttached(this);
         presenter.getAllWords();
     }
 
@@ -191,36 +176,28 @@ public class EditListActivity extends AppCompatActivity
     }
 
 
-    // free presenter reference
     @Override
     protected void onStop() {
         super.onStop();
         editWordAdapter = null;
-        presenter.onViewDetached();
     }
+
 
 
     @Override
-    public Loader<EditListPresenter> onCreateLoader(int id, Bundle args) {
-        DbHelper dbHelper = DbHelper.getInstance(getApplicationContext());
-        WordRepository wordRepository = WordRepository.getInstance(dbHelper);
-        presenter = new EditListPresenter(this,wordRepository);
-        return new EditListLoader(EditListActivity.this,presenter);
+    public int getLoaderId() {
+        return LOADER_ID;
     }
 
     @Override
-    public void onLoadFinished(Loader<EditListPresenter> loader, EditListPresenter data) {
-        presenter = data;
-        Log.i(TAG,"onLoadFinished");
+    public EditListPresenter getInitedPresenter(WordRepository repository) {
+        return new EditListPresenter(this,repository);
     }
 
     @Override
-    public void onLoaderReset(Loader<EditListPresenter> loader) {
-        presenter.onDestroy();
-        presenter = null;
+    protected void onPresenterCreatedOrRestored(@NonNull EditListPresenter presenter) {
+        this.presenter = presenter;
     }
-
-
 
 
 }

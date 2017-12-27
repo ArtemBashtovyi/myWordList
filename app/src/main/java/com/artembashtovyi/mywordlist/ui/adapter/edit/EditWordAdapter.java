@@ -1,4 +1,4 @@
-package com.artembashtovyi.mywordlist.ui.adapter.editHolder;
+package com.artembashtovyi.mywordlist.ui.adapter.edit;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -15,18 +15,15 @@ import java.util.List;
 
 
 public class EditWordAdapter extends RecyclerView.Adapter<EditHolder>
-        /*implements EditHolder.OnItemSelectedListener*/{
+       {
 
     private Context context;
     private List<SelectedWord> selectedWords;
-    /*private EditHolder.OnItemSelectedListener onItemSelectedListener;*/
     private OnViewClickListener onViewClickListener;
 
     public EditWordAdapter(Context context, List<Word> words,
-                           /*EditHolder.OnItemSelectedListener onItemSelectedListener,*/
                            OnViewClickListener onViewClickListener) {
         this.context = context;
-        /*this.onItemSelectedListener = onItemSelectedListener;*/
         this.onViewClickListener = onViewClickListener;
         setSelectedWords(words);
     }
@@ -105,12 +102,6 @@ public class EditWordAdapter extends RecyclerView.Adapter<EditHolder>
         }
         notifyDataSetChanged();
     }
-
-    /*@Override
-    public void callBack(SelectedWord selectedWord) {
-        onItemSelectedListener.callBack(selectedWord);
-    }*/
-
 
     public interface OnViewClickListener {
         void onEditClick(Word selectedWord);

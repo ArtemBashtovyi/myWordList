@@ -22,7 +22,6 @@ public class WordAdapter extends RecyclerView.Adapter<WordHolder> implements Fil
     private Context context;
     private OnWordClickListener onWordListener;
 
-
     public WordAdapter(ViewBindContract viewBindContract, List<Word> words,
                        Context context,OnWordClickListener onWordListener) {
         this.viewBindContract = viewBindContract;
@@ -59,7 +58,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordHolder> implements Fil
     }
 
 
-    // change Contract when languageMode changed
+    // change Contract when languageMode has changed
     public void changeContract(ViewBindContract viewBindContract) {
         this.viewBindContract = viewBindContract;
         notifyDataSetChanged();
@@ -70,7 +69,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordHolder> implements Fil
     }
 
 
-
+    // Filter for search
     @Override
     public Filter getFilter() {
         return new Filter() {
@@ -85,7 +84,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordHolder> implements Fil
                     List<Word> filteredList = new ArrayList<>();
                     for (Word row : words) {
 
-                        // engVersion match condition. this might differ depending on your requirement
+                        // engVersion match condition.
                         // here we are looking for engVersion or uaVersion
                         if (row.getEngVersion().toLowerCase().contains(charString.toLowerCase())
                                 || row.getEngVersion().toLowerCase().contains(charString.toLowerCase())) {

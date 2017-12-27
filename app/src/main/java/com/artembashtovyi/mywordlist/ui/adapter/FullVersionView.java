@@ -1,8 +1,6 @@
 package com.artembashtovyi.mywordlist.ui.adapter;
 
 import com.artembashtovyi.mywordlist.data.model.Word;
-import com.artembashtovyi.mywordlist.ui.adapter.ViewBindContract;
-import com.artembashtovyi.mywordlist.ui.adapter.editHolder.EditHolder;
 
 import java.util.List;
 

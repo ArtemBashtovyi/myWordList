@@ -5,22 +5,16 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.SearchView;
 import android.widget.Spinner;
 
+import com.artembashtovyi.mywordlist.BaseActivity;
 import com.artembashtovyi.mywordlist.R;
 import com.artembashtovyi.mywordlist.data.WordRepository;
 import com.artembashtovyi.mywordlist.data.model.Word;
-import com.artembashtovyi.mywordlist.data.sqlite.DbHelper;
 import com.artembashtovyi.mywordlist.ui.adapter.EngVersionView;
 import com.artembashtovyi.mywordlist.ui.adapter.ViewBindContract;
 import com.artembashtovyi.mywordlist.ui.adapter.WordAdapter;
@@ -31,8 +25,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class WordListActivity extends AppCompatActivity implements WordListView,
-        WordAdapter.OnWordClickListener,LoaderManager.LoaderCallbacks<WordListPresenter>{
+public class WordListActivity extends BaseActivity<WordListPresenter,WordListView> implements WordListView,
+        WordAdapter.OnWordClickListener{
 
     private static final int LOADER_ID = 202;
 
@@ -86,25 +80,11 @@ public class WordListActivity extends AppCompatActivity implements WordListView,
             }
         });
 
-
-        Loader<WordListPresenter> loader = getSupportLoaderManager().getLoader(LOADER_ID);
-
-        if (loader == null) {
-            getSupportLoaderManager().initLoader(LOADER_ID, null, this);
-        } else {
-            presenter = ((WordListLoader) loader).getPresenter();
-        }
-
-
     }
-
-
-
 
     @Override
     protected void onStart() {
         super.onStart();
-        presenter.onViewAttached(this);
         presenter.loadWords();
     }
 
@@ -126,17 +106,18 @@ public class WordListActivity extends AppCompatActivity implements WordListView,
             @Override
             public boolean onImageFavoriteClick(Word word) {
                 return presenter.isFavoriteState(word);
-
             }
 
             @Override
             public int describeContents() {
                 return 0;
+                // Stub
             }
+
 
             @Override
             public void writeToParcel(Parcel parcel, int i) {
-
+                // Stub
             }
         });
         descriptionDialog.show(getFragmentManager(),"Description");
@@ -150,25 +131,19 @@ public class WordListActivity extends AppCompatActivity implements WordListView,
 
 
     @Override
-    public Loader<WordListPresenter> onCreateLoader(int id, Bundle args) {
-        DbHelper dbHelper = DbHelper.getInstance(getApplicationContext());
-        WordRepository wordRepository = WordRepository.getInstance(dbHelper);
-        presenter = new WordListPresenter(this,wordRepository);
-        return new WordListLoader(WordListActivity.this,presenter);
+    public int getLoaderId() {
+        return LOADER_ID;
     }
 
     @Override
-    public void onLoadFinished(Loader<WordListPresenter> loader, WordListPresenter data) {
-        presenter = data;
+    public WordListPresenter getInitedPresenter(WordRepository repository) {
+        return new WordListPresenter(this,repository);
     }
 
     @Override
-    public void onLoaderReset(Loader<WordListPresenter> loader) {
-        presenter.onDestroy();
-        WordListActivity.this.presenter = null;
+    protected void onPresenterCreatedOrRestored(@NonNull WordListPresenter presenter) {
+        this.presenter = presenter;
     }
-
-
 
     @Override
     protected void onStop() {
@@ -177,7 +152,5 @@ public class WordListActivity extends AppCompatActivity implements WordListView,
             descriptionDialog.dismiss();
             descriptionDialog.onStop();
         }
-        presenter.onViewDetached();
     }
-
 }

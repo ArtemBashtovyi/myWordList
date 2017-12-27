@@ -95,13 +95,13 @@ public class DbHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void deleteWords(List<Word> delete) {
+    public void deleteWords(List<Word> delete,String tableName) {
         Log.i(TAG,"deleteWords");
         SQLiteDatabase db = this.getWritableDatabase();
 
         try {
             for (Word aDelete : delete) {
-                db.delete(TABLE_WORDS,
+                db.delete(tableName,
                         Words.COLUMN_NAME_ENG_VERSION + " = ? AND " + Words.COLUMN_NAME_UA_VERSION + " = ?",
                         new String[] {aDelete.getEngVersion(), aDelete.getUaVersion()+""});
             }
@@ -158,7 +158,7 @@ public class DbHelper extends SQLiteOpenHelper {
             }
 
         } catch (Exception e) {
-            Log.d(TAG,"Error get All Words");
+            Log.d(TAG,"Error getAllWords");
             e.printStackTrace();
         } finally {
             cursor.close();
@@ -189,11 +189,6 @@ public class DbHelper extends SQLiteOpenHelper {
 
     }
 
-
-    @Override
-    public synchronized void close() {
-        super.close();
-    }
 
 
     /* Entity */

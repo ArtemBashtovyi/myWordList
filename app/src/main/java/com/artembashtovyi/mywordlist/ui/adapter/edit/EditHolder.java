@@ -1,4 +1,4 @@
-package com.artembashtovyi.mywordlist.ui.adapter.editHolder;
+package com.artembashtovyi.mywordlist.ui.adapter.edit;
 
 import android.graphics.Color;
 import android.os.Build;

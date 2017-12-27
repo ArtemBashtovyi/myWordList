@@ -20,7 +20,6 @@ public abstract class BaseActivity<P extends Presenter<V>,V> extends AppCompatAc
         LoaderManager.LoaderCallbacks<P> {
 
     private static final String TAG = "BaseActivity";
-
     private P presenter;
 
 
@@ -28,28 +27,30 @@ public abstract class BaseActivity<P extends Presenter<V>,V> extends AppCompatAc
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         Loader<P> loader = getSupportLoaderManager().getLoader(getLoaderId());
 
         if (loader == null) {
             getSupportLoaderManager().initLoader(getLoaderId(), null, this);
         } else {
+
             presenter = ((BaseLoader<P>) loader).getPresenter();
-        }
+            // delivery presenter to OnStart() method descendents
+            onPresenterCreatedOrRestored(presenter);
+       }
 
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        Log.i(TAG, "onStartLoader-" );
+        Log.i(TAG, "onStart" );
         presenter.onViewAttached(getPresenterView());
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.i(TAG, "OnStopLoader-" );
+        Log.i(TAG, "onStop" );
         presenter.onViewDetached();
     }
 
@@ -57,7 +58,7 @@ public abstract class BaseActivity<P extends Presenter<V>,V> extends AppCompatAc
 
     @Override
     public Loader<P> onCreateLoader(int id, Bundle args) {
-        Log.i(TAG, "onCreteLoader-" );
+        Log.i(TAG, "onCreteLoader" );
         DbHelper dbHelper = DbHelper.getInstance(getApplicationContext());
         WordRepository wordRepository = WordRepository.getInstance(dbHelper);
 
@@ -67,7 +68,9 @@ public abstract class BaseActivity<P extends Presenter<V>,V> extends AppCompatAc
 
     @Override
     public void onLoadFinished(Loader<P> loader, P data) {
+        Log.i(TAG, "onLoadFinished" );
         presenter = data;
+        onPresenterCreatedOrRestored(data);
     }
 
     @Override
@@ -76,17 +79,16 @@ public abstract class BaseActivity<P extends Presenter<V>,V> extends AppCompatAc
     }
 
 
-    // Otherwise implementation for each activity
+    // various implementation for each activity
     public abstract int getLoaderId();
 
-
-    // Stub with initialized repository and database helper
+    // hack with initialized repository and database helper
     public abstract P getInitedPresenter(WordRepository repository);
 
+    // when data will be reload (presenter)
+    protected abstract void onPresenterCreatedOrRestored(@NonNull P presenter);
 
-    //public abstract void setPresenter(Presenter presenter);
-
-
+    // get current View
     @NonNull
     protected V getPresenterView() {
         return (V) this;

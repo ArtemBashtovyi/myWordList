@@ -1,11 +1,12 @@
-package com.artembashtovyi.mywordlist.ui;
+package com.artembashtovyi.mywordlist.ui.recent;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.util.Log;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -20,21 +21,36 @@ import com.artembashtovyi.mywordlist.data.WordRepository;
 import com.artembashtovyi.mywordlist.data.model.Word;
 import com.artembashtovyi.mywordlist.data.sqlite.DbHelper;
 import com.artembashtovyi.mywordlist.data.sqlite.query.RecentWordsQuery;
+import com.artembashtovyi.mywordlist.ui.adapter.FullVersionView;
+import com.artembashtovyi.mywordlist.ui.adapter.WordAdapter;
 import com.artembashtovyi.mywordlist.ui.edit.EditListActivity;
+import com.artembashtovyi.mywordlist.ui.favorites.FavoritesActivity;
 import com.artembashtovyi.mywordlist.ui.list.WordListActivity;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+public class RecentActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener,WordAdapter.OnWordClickListener {
+
+    @BindView(R.id.words_recent_recycler_view)
+    RecyclerView wordsRv;
+
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
+    private WordAdapter wordAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -52,7 +68,9 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        // TODO : IMPL ADAPTER RECYCLER and change arch of adapter and queries
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        wordsRv.setLayoutManager(llm);
+
         new AsyncTask<Void,Void,List<Word>>() {
             @Override
             protected List<Word> doInBackground(Void... voids) {
@@ -65,16 +83,15 @@ public class MainActivity extends AppCompatActivity
             protected void onPostExecute(List<Word> words) {
                 super.onPostExecute(words);
                 showWords(words);
+
             }
 
         }.execute();
     }
 
     public void showWords(List<Word> words) {
-        Log.i("EditListActivity","cachedWords ");
-        for(Word word : words) {
-            Log.i("row-",word.toString());
-        }
+        wordAdapter = new WordAdapter(new FullVersionView(),words,RecentActivity.this,this);
+        wordsRv.setAdapter(wordAdapter);
     }
 
     @Override
@@ -121,15 +138,18 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_slideshow) {
             WordListActivity.start(this);
         } else if (id == R.id.nav_manage) {
-
+            FavoritesActivity.start(this);
         } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
 
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void clickCallBack(Word word) {
+
     }
 }

@@ -15,6 +15,8 @@ import java.util.List;
 
 public class EditListPresenter implements Presenter<EditWordsView> {
 
+    private final static String TAG = "EditListPresenter";
+
     private EditWordsView view;
     private WordRepository wordRepository;
     private List<Word> words;
@@ -59,7 +61,7 @@ public class EditListPresenter implements Presenter<EditWordsView> {
             view.showAddedWord(word);
             words.add(word);
 
-            Log.i("Presenter", "New Word has been added");
+            Log.i(TAG, "New Word has appended");
         } else {
             view.showError();
         }
@@ -67,7 +69,7 @@ public class EditListPresenter implements Presenter<EditWordsView> {
 
     // Logic for presenter
     void editWord(Word oldWord,Word word) {
-        Log.i("Presenter","EditWord-" + word.toString());
+        Log.i(TAG,"EditWord " + word.toString());
 
         wordRepository.editWord(oldWord,word);
         view.showEditedWord(oldWord,word);
@@ -77,7 +79,6 @@ public class EditListPresenter implements Presenter<EditWordsView> {
         words.get(s).setUaVersion(word.getUaVersion());
 
     }
-
 
     void sortWords(int id) {
         switch (id) {
@@ -97,7 +98,6 @@ public class EditListPresenter implements Presenter<EditWordsView> {
                 Collections.sort(words, (word1, word2) -> word1.getEngVersion().compareTo(word2.getEngVersion()));
                 break;
         }
-
         view.showWords(words);
     }
 

@@ -10,7 +10,7 @@ import android.util.Log;
  */
 
 public class BaseLoader<T extends Presenter> extends Loader<T> {
-
+    private static final String TAG = "BaseLoader";
     private T presenter;
 
 
@@ -21,15 +21,9 @@ public class BaseLoader<T extends Presenter> extends Loader<T> {
 
     @Override
     protected void onStartLoading() {
-        Log.i("loader", "onStartLoading-" );
+        Log.i(TAG, "onStartLoading" );
 
-        if (presenter != null) {
-            deliverResult(presenter);
-            return;
-        }
-
-        // Otherwise, force a load
-        forceLoad();
+        deliverResult(presenter);
     }
 
     @Override
@@ -40,7 +34,7 @@ public class BaseLoader<T extends Presenter> extends Loader<T> {
 
     @Override
     protected void onReset() {
-        Log.i("loader", "onReset-");
+        Log.i(TAG, "onReset");
         if (presenter != null) {
             presenter.onDestroy();
             presenter = null;
