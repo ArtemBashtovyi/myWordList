@@ -41,6 +41,7 @@ public class DbHelperTest {
         getTargetContext().deleteDatabase(DbHelper.getInstance(getTargetContext()).getDatabaseName());
 
         dbHelper = DbHelper.getInstance(getTargetContext());
+
         dbHelper.truncate(WORDS_TABLE_NAME);
         dbHelper.truncate(FAVORITE_TABLE_NAME);
 
