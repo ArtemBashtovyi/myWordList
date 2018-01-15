@@ -10,7 +10,8 @@ import java.util.List;
 
 public interface FavoritesView  {
 
+    void showLoading();
+    void hideLoading();
+
     void showFavorites(List<Word> favorites);
-
-
 }

@@ -12,4 +12,6 @@ import java.util.List;
 public interface RecentView {
 
    void showWords(List<Word> words);
+
+   void showEmptyError();
 }

@@ -55,10 +55,13 @@ public class WordAddDialog extends DialogFragment {
                     word.setEngVersion(engVersionEt.getText().toString());
                     word.setUaVersion(uaVersionEt.getText().toString());
 
-                    try {
-                        mListener.onPositiveClick(word);
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
+                    if (word.getUaVersion().length() != 0  &&
+                            word.getEngVersion().length() != 0) {
+                        try {
+                            mListener.onPositiveClick(word);
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
                     }
 
                 })

@@ -64,18 +64,19 @@ public class EditDialog extends DialogFragment {
                     word.setEngVersion(engVersionEt.getText().toString());
                     word.setUaVersion(uaVersionEt.getText().toString());
 
-                    try {
-                        mListener.onEditPositiveClick(oldWord,word);
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
-                    }
-
+                    if (word.getUaVersion().length() != 0  &&
+                            word.getEngVersion().length() != 0) {
+                        try {
+                            mListener.onEditPositiveClick(oldWord,word);
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
+                    } else showError();
                 })
                 .setNegativeButton("Cancel", (dialog, id) -> EditDialog.this.getDialog().cancel());
         return builder.show();
     }
 
     private void showError() {
-
     }
 }

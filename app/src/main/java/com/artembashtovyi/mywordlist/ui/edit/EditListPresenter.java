@@ -82,7 +82,13 @@ public class EditListPresenter implements Presenter<EditWordsView> {
 
     void sortWords(int id) {
         switch (id) {
-            case R.id.action_sort_by_date:
+            case 0:
+                Collections.sort(words, (word1, word2) -> word1.getEngVersion().compareTo(word2.getEngVersion()));
+                break;
+            case 1:
+                Collections.sort(words, ((word1, word2) -> word1.getUaVersion().compareTo(word2.getUaVersion())));
+                break;
+            case 2:
                 Collections.sort(words, (word1, word2) -> {
                     if (word1.getId() < word2.getId()) {
                         return 1;
@@ -90,12 +96,6 @@ public class EditListPresenter implements Presenter<EditWordsView> {
                         return -1;
                     return 0;
                 });
-                break;
-            case R.id.action_sort_by_ua:
-                Collections.sort(words, ((word1, word2) -> word1.getUaVersion().compareTo(word2.getUaVersion())));
-                break;
-            case R.id.action_sort_by_eng:
-                Collections.sort(words, (word1, word2) -> word1.getEngVersion().compareTo(word2.getEngVersion()));
                 break;
         }
         view.showWords(words);

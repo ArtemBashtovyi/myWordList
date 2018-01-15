@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.CheckedTextView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.artembashtovyi.mywordlist.R;
@@ -29,7 +30,7 @@ public class EditHolder extends RecyclerView.ViewHolder {
     CheckedTextView checkedTv;
 
     @BindView(R.id.root_view)
-    LinearLayout rootView;
+    RelativeLayout rootView;
 
     @BindView(R.id.image_edit)
     ImageView editIv;
@@ -62,13 +63,13 @@ public class EditHolder extends RecyclerView.ViewHolder {
     }
 
    public void setChecked(boolean value) {
-        if (value) {
+       /* if (value) {
             checkedTv.setBackgroundColor(Color.LTGRAY);
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 checkedTv.setBackground(null);
             } else checkedTv.setBackgroundColor(Color.WHITE);
-        }
+        }*/
 
         selectedWord.setSelected(value);
         checkedTv.setChecked(value);

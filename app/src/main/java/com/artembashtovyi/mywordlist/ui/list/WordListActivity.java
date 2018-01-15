@@ -5,11 +5,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
+
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.SearchView;
-import android.widget.Spinner;
 
 import com.artembashtovyi.mywordlist.BaseActivity;
 import com.artembashtovyi.mywordlist.R;
@@ -18,26 +21,33 @@ import com.artembashtovyi.mywordlist.data.model.Word;
 import com.artembashtovyi.mywordlist.ui.adapter.EngVersionView;
 import com.artembashtovyi.mywordlist.ui.adapter.ViewBindContract;
 import com.artembashtovyi.mywordlist.ui.adapter.WordAdapter;
+import com.artembashtovyi.mywordlist.ui.dialog.ViewChoiceDialog;
 import com.artembashtovyi.mywordlist.ui.list.dialog.WordDescriptionDialog;
+import com.artembashtovyi.mywordlist.ui.recycler.RecyclerViewItemDividerDecorator;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static android.support.v7.widget.RecyclerView.VERTICAL;
+
 public class WordListActivity extends BaseActivity<WordListPresenter,WordListView> implements WordListView,
         WordAdapter.OnWordClickListener{
 
     private static final int LOADER_ID = 202;
-
-    @BindView(R.id.spinner_sorting)
-    Spinner spinner;
 
     @BindView(R.id.word_list_recycler_view)
     RecyclerView wordsRv;
 
     @BindView(R.id.search_view)
     SearchView searchView;
+
+    @BindView(R.id.view_contract_image_view)
+    ImageView viewContractIv;
+
+    @BindView(R.id.interleaving_image_view)
+    ImageView shuffleIv;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -56,12 +66,35 @@ public class WordListActivity extends BaseActivity<WordListPresenter,WordListVie
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_word_list);
         ButterKnife.bind(this);
-
         setSupportActionBar(toolbar);
-
 
         LinearLayoutManager llm = new LinearLayoutManager(this);
         wordsRv.setLayoutManager(llm);
+        wordsRv.addItemDecoration(new RecyclerViewItemDividerDecorator(this));
+
+        shuffleIv.setOnClickListener(view -> presenter.shuffleWords());
+
+        viewContractIv.setOnClickListener(view -> {
+            ViewChoiceDialog dialog = ViewChoiceDialog.newInstance(new ViewChoiceDialog.ChoiceListener() {
+            @Override
+            public void onViewContractClick(ViewBindContract contract) {
+                if (wordAdapter != null) {
+                    wordAdapter.changeContract(contract);
+                }
+            }
+
+            @Override
+            public int describeContents() {
+                return 0;
+            }
+
+            @Override
+            public void writeToParcel(Parcel parcel, int i) {
+
+            }
+        });
+           dialog.show(getFragmentManager(),"viewContract");
+        });
 
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {

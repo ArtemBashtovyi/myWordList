@@ -9,20 +9,33 @@
     app:popupTheme="@style/AppTheme.PopupOverlay"
     >
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginLeft="10dp">
+        android:orientation="vertical">
 
         <ImageView
             android:id="@+id/image_delete"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_alignParentLeft="true"
+            android:layout_margin="5dp"
             app:srcCompat="@android:drawable/ic_menu_delete" />
 
-
-
-    </LinearLayout>
+        <ImageView
+            android:id="@+id/sort_image_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_alignParentRight="true"
+            android:layout_margin="5dp"
+            app:srcCompat="@android:drawable/ic_menu_sort_by_size"
+             />
+    </RelativeLayout>
 
 </android.support.v7.widget.Toolbar>

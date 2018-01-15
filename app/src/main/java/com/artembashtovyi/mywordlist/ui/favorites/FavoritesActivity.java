@@ -4,22 +4,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 
 import com.artembashtovyi.mywordlist.BaseActivity;
 import com.artembashtovyi.mywordlist.R;
 import com.artembashtovyi.mywordlist.data.WordRepository;
 import com.artembashtovyi.mywordlist.data.model.Word;
 import com.artembashtovyi.mywordlist.ui.favorites.adapter.FavoriteAdapter;
+import com.artembashtovyi.mywordlist.ui.recycler.RecyclerViewItemDividerDecorator;
 
 import java.util.List;
 
@@ -47,6 +42,7 @@ public class FavoritesActivity extends BaseActivity<FavoritesPresenter,Favorites
         context.startActivity(intent);
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +53,7 @@ public class FavoritesActivity extends BaseActivity<FavoritesPresenter,Favorites
 
         LinearLayoutManager llm = new LinearLayoutManager(this);
         favoritesRv.setLayoutManager(llm);
+        favoritesRv.addItemDecoration(new RecyclerViewItemDividerDecorator(this));
     }
 
 
@@ -71,6 +68,16 @@ public class FavoritesActivity extends BaseActivity<FavoritesPresenter,Favorites
     @Override
     public void clickCallBack(Word word) {
         presenter.removeFavorite(word);
+    }
+
+    @Override
+    public void showLoading() {
+
+    }
+
+    @Override
+    public void hideLoading() {
+
     }
 
     @Override

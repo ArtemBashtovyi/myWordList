@@ -1,39 +1,47 @@
 package com.artembashtovyi.mywordlist.ui.recent;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 
+import com.artembashtovyi.mywordlist.BaseActivity;
 import com.artembashtovyi.mywordlist.R;
 import com.artembashtovyi.mywordlist.data.WordRepository;
 import com.artembashtovyi.mywordlist.data.model.Word;
-import com.artembashtovyi.mywordlist.data.sqlite.DbHelper;
-import com.artembashtovyi.mywordlist.data.sqlite.query.RecentWordsQuery;
+import com.artembashtovyi.mywordlist.ui.adapter.EngVersionView;
 import com.artembashtovyi.mywordlist.ui.adapter.FullVersionView;
+import com.artembashtovyi.mywordlist.ui.adapter.ViewBindContract;
 import com.artembashtovyi.mywordlist.ui.adapter.WordAdapter;
+import com.artembashtovyi.mywordlist.ui.dialog.ViewChoiceDialog;
 import com.artembashtovyi.mywordlist.ui.edit.EditListActivity;
 import com.artembashtovyi.mywordlist.ui.favorites.FavoritesActivity;
 import com.artembashtovyi.mywordlist.ui.list.WordListActivity;
+import com.artembashtovyi.mywordlist.ui.recycler.RecyclerViewItemDividerDecorator;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class RecentActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,WordAdapter.OnWordClickListener {
+import static android.support.v7.widget.RecyclerView.VERTICAL;
+
+public class RecentActivity extends BaseActivity<RecentPresenter,RecentView>
+        implements NavigationView.OnNavigationItemSelectedListener,
+        WordAdapter.OnWordClickListener,RecentView{
+
+    private static final int LOADER_ID = 213;
 
     @BindView(R.id.words_recent_recycler_view)
     RecyclerView wordsRv;
@@ -41,8 +49,11 @@ public class RecentActivity extends AppCompatActivity
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    private WordAdapter wordAdapter;
+    @BindView(R.id.view_contract_image_view)
+    ImageView imageView;
 
+    private RecentPresenter presenter;
+    private WordAdapter wordAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +69,29 @@ public class RecentActivity extends AppCompatActivity
         fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show());
 
+
+        imageView.setOnClickListener(view -> {
+            if (wordAdapter != null) {
+               ViewChoiceDialog dialog =  ViewChoiceDialog.newInstance(new ViewChoiceDialog.ChoiceListener() {
+                    @Override
+                    public void onViewContractClick(ViewBindContract contract) {
+                        wordAdapter.changeContract(contract);
+                    }
+
+                    @Override
+                    public int describeContents() {
+                        return 0;
+                    }
+
+                    @Override
+                    public void writeToParcel(Parcel parcel, int i) {
+
+                    }
+                });
+                dialog.show(getFragmentManager(),"viewContract");
+            }
+        });
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -71,27 +105,40 @@ public class RecentActivity extends AppCompatActivity
         LinearLayoutManager llm = new LinearLayoutManager(this);
         wordsRv.setLayoutManager(llm);
 
-        new AsyncTask<Void,Void,List<Word>>() {
-            @Override
-            protected List<Word> doInBackground(Void... voids) {
-                DbHelper dbHelper = DbHelper.getInstance(getApplicationContext());
-                WordRepository wordRepository = WordRepository.getInstance(dbHelper);
-                return wordRepository.getWords(new RecentWordsQuery(5));
-            }
 
-            @Override
-            protected void onPostExecute(List<Word> words) {
-                super.onPostExecute(words);
-                showWords(words);
-
-            }
-
-        }.execute();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        presenter.loadWords();
+    }
+
+    @Override
+    public int getLoaderId() {
+        return LOADER_ID;
+    }
+
+    @Override
+    public RecentPresenter getInitedPresenter(WordRepository repository) {
+        return new RecentPresenter(repository,this);
+    }
+
+    @Override
+    protected void onPresenterCreatedOrRestored(@NonNull RecentPresenter presenter) {
+        this.presenter = presenter;
+    }
+
+    @Override
     public void showWords(List<Word> words) {
-        wordAdapter = new WordAdapter(new FullVersionView(),words,RecentActivity.this,this);
+        wordAdapter = new WordAdapter(new EngVersionView(),words,RecentActivity.this,this);
         wordsRv.setAdapter(wordAdapter);
+        wordsRv.addItemDecoration(new RecyclerViewItemDividerDecorator(this));
+    }
+
+    @Override
+    public void showEmptyError() {
+
     }
 
     @Override
@@ -104,44 +151,24 @@ public class RecentActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
 
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.nav_gallery) {
             EditListActivity.start(this);
         } else if (id == R.id.nav_slideshow) {
             WordListActivity.start(this);
         } else if (id == R.id.nav_manage) {
             FavoritesActivity.start(this);
-        } else if (id == R.id.nav_share) {
-
         }
+
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -152,4 +179,5 @@ public class RecentActivity extends AppCompatActivity
     public void clickCallBack(Word word) {
 
     }
+
 }

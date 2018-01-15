@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array  name="spinner_list_item_array">
-        <item>By Date</item>
-        <item>By Ukr</item>
-        <item>By Eng</item>
+
+    <string-array name="toppings">
+
+        <item>Eng Version</item>
+        <item>Ua Version</item>
+        <item>Full Version</item>
+
+    </string-array>
+    <string-array name="sort_types">
+
+        <item>Eng</item>
+        <item>Ua</item>
+        <item>Date</item>
+
     </string-array>
 
 </resources>

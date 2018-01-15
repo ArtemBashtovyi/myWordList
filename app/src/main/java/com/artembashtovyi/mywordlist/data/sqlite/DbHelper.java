@@ -138,7 +138,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
 
     public List<Word> getWords(Query query,String tableName) {
-        Log.i(TAG,"getAllWords");
+       // Log.i(TAG,"getAllWords");
         List<Word> words = new ArrayList<>();
 
         SQLiteDatabase db = this.getReadableDatabase();
@@ -158,7 +158,7 @@ public class DbHelper extends SQLiteOpenHelper {
             }
 
         } catch (Exception e) {
-            Log.d(TAG,"Error getAllWords");
+          //  Log.d(TAG,"Error getAllWords");
             e.printStackTrace();
         } finally {
             cursor.close();
@@ -172,23 +172,35 @@ public class DbHelper extends SQLiteOpenHelper {
     public void addWord(Word word,String tableName){
         SQLiteDatabase db = this.getWritableDatabase();
 
+        String engVersion = word.getEngVersion();
+        String uaVersion = word.getUaVersion();
+
+        engVersion = engVersion.replaceAll("'","\'");
+        uaVersion = uaVersion.replaceAll("'","\'");
+
         try {
+            /*if (engVersion.) {
+
+            }*/
             ContentValues contentValues = new ContentValues();
-            contentValues.put(COLUMN_NAME_ENG_VERSION,word.getEngVersion());
-            contentValues.put(COLUMN_NAME_UA_VERSION,word.getUaVersion());
+            contentValues.put(COLUMN_NAME_ENG_VERSION,engVersion);
+            contentValues.put(COLUMN_NAME_UA_VERSION,uaVersion);
 
             long rowId =
                     db.insert(tableName, null, contentValues);
+
             Log.i(TAG," id -- row " + rowId);
         } catch (Exception e){
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             db.close();
         }
-
     }
 
+    public void truncate(String tableName) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        database.execSQL("delete from " + tableName);
+    }
 
 
     /* Entity */

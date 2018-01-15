@@ -12,6 +12,7 @@ import com.artembashtovyi.mywordlist.ui.adapter.FullVersionView;
 import com.artembashtovyi.mywordlist.ui.adapter.UaVersionView;
 import com.artembashtovyi.mywordlist.ui.adapter.ViewBindContract;
 
+import java.util.Collections;
 import java.util.List;
 
 public class WordListPresenter implements Presenter<WordListView> {
@@ -78,6 +79,11 @@ public class WordListPresenter implements Presenter<WordListView> {
     @Override
     public void onDestroy() {
 
+    }
+
+    void shuffleWords() {
+        Collections.shuffle(words);
+        view.showWords(words);
     }
 
     void changeAdapterContract(String selectedItem) {

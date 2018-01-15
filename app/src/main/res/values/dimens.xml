@@ -10,4 +10,6 @@
     <dimen name="text_margin">16dp</dimen>
     <dimen name="dialog_description_title">18sp</dimen>
     <dimen name="dialog_description_content">16sp</dimen>
+    <dimen name="main_field_text_view">18sp</dimen>
+    <dimen name="second_field_text_view">14sp</dimen>
 </resources>
