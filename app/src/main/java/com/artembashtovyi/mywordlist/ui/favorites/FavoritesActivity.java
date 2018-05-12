@@ -11,7 +11,7 @@ import android.util.Log;
 
 import com.artembashtovyi.mywordlist.BaseActivity;
 import com.artembashtovyi.mywordlist.R;
-import com.artembashtovyi.mywordlist.data.WordRepository;
+import com.artembashtovyi.mywordlist.data.WordRepositoryImpl;
 import com.artembashtovyi.mywordlist.data.model.Word;
 import com.artembashtovyi.mywordlist.ui.favorites.adapter.FavoriteAdapter;
 import com.artembashtovyi.mywordlist.ui.recycler.RecyclerViewItemDividerDecorator;
@@ -54,6 +54,7 @@ public class FavoritesActivity extends BaseActivity<FavoritesPresenter,Favorites
         LinearLayoutManager llm = new LinearLayoutManager(this);
         favoritesRv.setLayoutManager(llm);
         favoritesRv.addItemDecoration(new RecyclerViewItemDividerDecorator(this));
+
     }
 
 
@@ -93,7 +94,7 @@ public class FavoritesActivity extends BaseActivity<FavoritesPresenter,Favorites
     }
 
     @Override
-    public FavoritesPresenter getInitedPresenter(WordRepository repository) {
+    public FavoritesPresenter getInitedPresenter(WordRepositoryImpl repository) {
         presenter = new FavoritesPresenter(this,repository);
         return presenter;
     }

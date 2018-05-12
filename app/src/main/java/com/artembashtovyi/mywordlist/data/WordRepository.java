@@ -1,94 +1,29 @@
 package com.artembashtovyi.mywordlist.data;
 
-
-import android.os.AsyncTask;
-
+import com.artembashtovyi.mywordlist.data.async.WordCallbacks;
 import com.artembashtovyi.mywordlist.data.model.Word;
-import com.artembashtovyi.mywordlist.data.sqlite.DbHelper;
-import com.artembashtovyi.mywordlist.data.sqlite.query.AllWordsQuery;
 import com.artembashtovyi.mywordlist.data.sqlite.query.Query;
 
 import java.util.List;
 
-// FIXME : Stupid solution with AsyncTasks
-public class WordRepository  {
+/**
+ * Created by felix on 5/12/18
+ */
 
-    private static WordRepository INSTANCE;
-    private DbHelper dbHelper;
+interface WordRepository {
+    void addWord(Word word);
 
+    void deleteWords(List<Word> words);
 
-    private WordRepository(DbHelper dbHelper) {
-        this.dbHelper = dbHelper;
-    }
+    void getWords(WordCallbacks.AllWordsCallback callback,Query query);
 
-    public static WordRepository getInstance(DbHelper dbHelper) {
-        if (INSTANCE == null) {
-            INSTANCE = new WordRepository(dbHelper);
-        }
-        return INSTANCE;
-    }
+    void editWord(Word oldWord, Word newWord);
 
-    public void addWord(Word word) {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                dbHelper.addWord(word,DbHelper.Words.TABLE_WORDS);
-                return null;
-            }
-        }.execute();
-    }
+    void addToFavorites(Word word);
 
-    public void deleteWords(List<Word> words) {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                dbHelper.deleteWords(words,DbHelper.Words.TABLE_WORDS);
-                dbHelper.deleteWords(words,DbHelper.FavoriteWords.TABLE_FAVORITE_WORDS);
-                return null;
-            }
-        }.execute();
-    }
+    void deleteFromFavorites(Word word);
 
-    public List<Word> getWords(Query query) {
-        return dbHelper.getWords(query,DbHelper.Words.TABLE_WORDS);
-    }
+    void getFavorites(WordCallbacks.FavoriteWordsCallback callback);
 
-    public void editWord(Word oldWord,Word newWord) {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                dbHelper.editWord(oldWord,newWord);
-                return null;
-            }
-        }.execute();
-    }
-
-    public void addToFavorites(Word word) {
-        new AsyncTask<Void,Void,Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                dbHelper.addWord(word,DbHelper.FavoriteWords.TABLE_FAVORITE_WORDS);
-                return null;
-            }
-        }.execute();
-    }
-
-    public void deleteFromFavorites(Word word){
-        new AsyncTask<Void,Void,Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                dbHelper.deleteWord(word,DbHelper.FavoriteWords.TABLE_FAVORITE_WORDS);
-                return null;
-            }
-        }.execute();
-    }
-
-
-    public List<Word> getFavorites() {
-        return dbHelper.getWords(new AllWordsQuery(),DbHelper.FavoriteWords.TABLE_FAVORITE_WORDS);
-    }
-
-    public boolean isFavorite(Word word) {
-        return dbHelper.isFavorite(word);
-    }
+    void isFavorite(WordCallbacks.CheckWordCallback callback,Word word);
 }

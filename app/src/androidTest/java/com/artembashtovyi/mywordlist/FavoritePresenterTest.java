@@ -4,7 +4,7 @@ package com.artembashtovyi.mywordlist;
 import android.os.AsyncTask;
 import android.support.test.rule.UiThreadTestRule;
 
-import com.artembashtovyi.mywordlist.data.WordRepository;
+import com.artembashtovyi.mywordlist.data.WordRepositoryImpl;
 import com.artembashtovyi.mywordlist.data.model.Word;
 import com.artembashtovyi.mywordlist.ui.favorites.FavoritesPresenter;
 import com.artembashtovyi.mywordlist.ui.favorites.FavoritesView;
@@ -30,7 +30,7 @@ public class FavoritePresenterTest {
     FavoritesPresenter presenter;
 
     @Mock
-    WordRepository repository;
+    WordRepositoryImpl repository;
 
     @Mock
     FavoritesView view;

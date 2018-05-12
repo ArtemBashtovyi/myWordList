@@ -22,7 +22,6 @@ public class BaseLoader<T extends Presenter> extends Loader<T> {
     @Override
     protected void onStartLoading() {
         Log.i(TAG, "onStartLoading" );
-
         deliverResult(presenter);
     }
 

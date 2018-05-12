@@ -17,7 +17,7 @@ import android.widget.ImageView;
 
 import com.artembashtovyi.mywordlist.BaseActivity;
 import com.artembashtovyi.mywordlist.R;
-import com.artembashtovyi.mywordlist.data.WordRepository;
+import com.artembashtovyi.mywordlist.data.WordRepositoryImpl;
 import com.artembashtovyi.mywordlist.data.model.Word;
 import com.artembashtovyi.mywordlist.ui.adapter.edit.EditWordAdapter;
 import com.artembashtovyi.mywordlist.ui.dialog.SortDialog;
@@ -56,7 +56,6 @@ public class EditListActivity extends BaseActivity<EditListPresenter,EditWordsVi
     ImageView sortIv;
 
     private EditListPresenter presenter;
-
     private EditWordAdapter editWordAdapter;
 
 
@@ -107,6 +106,7 @@ public class EditListActivity extends BaseActivity<EditListPresenter,EditWordsVi
 
             }
         });
+
 
     }
 
@@ -205,7 +205,7 @@ public class EditListActivity extends BaseActivity<EditListPresenter,EditWordsVi
     }
 
     @Override
-    public EditListPresenter getInitedPresenter(WordRepository repository) {
+    public EditListPresenter getInitedPresenter(WordRepositoryImpl repository) {
         return new EditListPresenter(this,repository);
     }
 

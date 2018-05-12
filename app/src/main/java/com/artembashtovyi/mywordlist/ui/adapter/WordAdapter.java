@@ -64,6 +64,12 @@ public class WordAdapter extends RecyclerView.Adapter<WordHolder> implements Fil
         notifyDataSetChanged();
     }
 
+    public void setPosition() {
+
+    }
+
+
+
     public interface OnWordClickListener {
         void clickCallBack(Word word);
     }

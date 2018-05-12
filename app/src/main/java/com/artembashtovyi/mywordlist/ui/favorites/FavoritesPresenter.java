@@ -1,50 +1,37 @@
 package com.artembashtovyi.mywordlist.ui.favorites;
 
 
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.artembashtovyi.mywordlist.Presenter;
-import com.artembashtovyi.mywordlist.data.WordRepository;
+import com.artembashtovyi.mywordlist.data.WordRepositoryImpl;
+import com.artembashtovyi.mywordlist.data.async.WordCallbacks;
 import com.artembashtovyi.mywordlist.data.model.Word;
-import com.artembashtovyi.mywordlist.ui.dialog.ViewChoiceDialog;
 
 import java.util.List;
 
 public class FavoritesPresenter implements Presenter<FavoritesView> {
 
     private FavoritesView view;
-    private WordRepository wordRepository;
+    private WordRepositoryImpl wordRepository;
     private List<Word> words;
 
-    public FavoritesPresenter(FavoritesView view, WordRepository wordRepository) {
+
+    public FavoritesPresenter(FavoritesView view, WordRepositoryImpl wordRepository) {
         this.view = view;
         this.wordRepository = wordRepository;
     }
 
     public void loadFavorites() {
-        new AsyncTask<Void, Void, List<Word>>() {
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                view.showLoading();
-            }
+        view.showLoading();
 
-            @Override
-            protected List<Word> doInBackground(Void... voids) {
-                return wordRepository.getFavorites();
-            }
-
-            @Override
-            protected void onPostExecute(List<Word> words) {
-                super.onPostExecute(words);
-                FavoritesPresenter.this.words = words;
-                view.hideLoading();
-                view.showFavorites(words);
-                Log.i("Presenter","onPostEx");
-            }
-        }.execute();
-
+        WordCallbacks.FavoriteWordsCallback callback = (words) -> {
+            FavoritesPresenter.this.words = words;
+            view.showFavorites(words);
+            view.hideLoading();
+            Log.i("FavoritePresenter","callback Favorite words");
+        };
+        wordRepository.getFavorites(callback);
     }
 
 
@@ -65,7 +52,7 @@ public class FavoritesPresenter implements Presenter<FavoritesView> {
 
     @Override
     public void onDestroy() {
-
+        wordRepository = null;
     }
 
 

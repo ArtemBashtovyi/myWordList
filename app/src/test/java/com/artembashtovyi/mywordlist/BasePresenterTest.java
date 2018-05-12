@@ -1,6 +1,6 @@
 package com.artembashtovyi.mywordlist;
 
-import com.artembashtovyi.mywordlist.data.WordRepository;
+import com.artembashtovyi.mywordlist.data.WordRepositoryImpl;
 
 import org.junit.Before;
 import org.mockito.Mock;
@@ -13,7 +13,7 @@ import org.mockito.MockitoAnnotations;
 public class BasePresenterTest {
 
     @Mock
-    public WordRepository repository;
+    public WordRepositoryImpl repository;
 
 
     @Before
@@ -22,7 +22,7 @@ public class BasePresenterTest {
 
     }
 
-    public WordRepository getRepository() {
+    public WordRepositoryImpl getRepository() {
         return repository;
     }
 }

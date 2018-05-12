@@ -1,14 +1,13 @@
 package com.artembashtovyi.mywordlist.ui.edit;
 
 
-import android.os.AsyncTask;
 import android.util.Log;
 
-import com.artembashtovyi.mywordlist.R;
-import com.artembashtovyi.mywordlist.data.WordRepository;
+import com.artembashtovyi.mywordlist.Presenter;
+import com.artembashtovyi.mywordlist.data.WordRepositoryImpl;
+import com.artembashtovyi.mywordlist.data.async.WordCallbacks;
 import com.artembashtovyi.mywordlist.data.model.Word;
 import com.artembashtovyi.mywordlist.data.sqlite.query.AllWordsQuery;
-import com.artembashtovyi.mywordlist.Presenter;
 
 import java.util.Collections;
 import java.util.List;
@@ -18,10 +17,10 @@ public class EditListPresenter implements Presenter<EditWordsView> {
     private final static String TAG = "EditListPresenter";
 
     private EditWordsView view;
-    private WordRepository wordRepository;
+    private WordRepositoryImpl wordRepository;
     private List<Word> words;
 
-    public EditListPresenter(EditWordsView view,WordRepository wordRepository) {
+    public EditListPresenter(EditWordsView view, WordRepositoryImpl wordRepository) {
         this.view = view;
         this.wordRepository = wordRepository;
     }
@@ -29,18 +28,11 @@ public class EditListPresenter implements Presenter<EditWordsView> {
     // Load All Words
     void getAllWords() {
         if (words == null) {
-            new AsyncTask<Void, Void, List<Word>>() {
-                @Override
-                protected List<Word> doInBackground(Void... voids) {
-                    return words = wordRepository.getWords(new AllWordsQuery());
-                }
-
-                @Override
-                protected void onPostExecute(List<Word> wordsDTO) {
-                    words = wordsDTO;
-                    view.showWords(wordsDTO);
-                }
-            }.execute();
+            WordCallbacks.AllWordsCallback callback = words -> {
+               view.showWords(words);
+                EditListPresenter.this.words = words;
+            };
+            wordRepository.getWords(callback,new AllWordsQuery());
         } else
             view.showWords(words);
     }
@@ -50,17 +42,15 @@ public class EditListPresenter implements Presenter<EditWordsView> {
         if (selectedWords != null) {
             wordRepository.deleteWords(selectedWords);
             words.removeAll(selectedWords);
-            view.showEditedWordList(words);
+            view.showEditedWordList(selectedWords);
         }
     }
 
     void addWord(Word word) {
         if (!words.contains(word)) {
-
             wordRepository.addWord(word);
-            view.showAddedWord(word);
             words.add(word);
-
+            view.showAddedWord(word);
             Log.i(TAG, "New Word has appended");
         } else {
             view.showError();
@@ -68,16 +58,15 @@ public class EditListPresenter implements Presenter<EditWordsView> {
     }
 
     // Logic for presenter
-    void editWord(Word oldWord,Word word) {
-        Log.i(TAG,"EditWord " + word.toString());
+    void editWord(Word oldWord, Word word) {
+        Log.i(TAG, "EditWord " + word.toString());
 
-        wordRepository.editWord(oldWord,word);
-        view.showEditedWord(oldWord,word);
+        wordRepository.editWord(oldWord, word);
+        view.showEditedWord(oldWord, word);
 
         int s = words.indexOf(oldWord);
         words.get(s).setEngVersion(word.getEngVersion());
         words.get(s).setUaVersion(word.getUaVersion());
-
     }
 
     void sortWords(int id) {

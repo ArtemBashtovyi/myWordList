@@ -5,18 +5,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
-
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.SearchView;
 
 import com.artembashtovyi.mywordlist.BaseActivity;
 import com.artembashtovyi.mywordlist.R;
-import com.artembashtovyi.mywordlist.data.WordRepository;
+import com.artembashtovyi.mywordlist.data.WordRepositoryImpl;
 import com.artembashtovyi.mywordlist.data.model.Word;
 import com.artembashtovyi.mywordlist.ui.adapter.EngVersionView;
 import com.artembashtovyi.mywordlist.ui.adapter.ViewBindContract;
@@ -30,12 +27,11 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static android.support.v7.widget.RecyclerView.VERTICAL;
-
 public class WordListActivity extends BaseActivity<WordListPresenter,WordListView> implements WordListView,
         WordAdapter.OnWordClickListener{
 
     private static final int LOADER_ID = 202;
+    private static final String SAVED_LAYOUT_MANAGER = "POS";
 
     @BindView(R.id.word_list_recycler_view)
     RecyclerView wordsRv;
@@ -55,6 +51,7 @@ public class WordListActivity extends BaseActivity<WordListPresenter,WordListVie
     private WordAdapter wordAdapter;
     private WordListPresenter presenter;
     private WordDescriptionDialog descriptionDialog;
+
 
     public static void start(@NonNull Context context) {
         Intent intent = new Intent(context,WordListActivity.class);
@@ -80,6 +77,7 @@ public class WordListActivity extends BaseActivity<WordListPresenter,WordListVie
             public void onViewContractClick(ViewBindContract contract) {
                 if (wordAdapter != null) {
                     wordAdapter.changeContract(contract);
+                    presenter.changeAdapterContract(contract);
                 }
             }
 
@@ -169,7 +167,7 @@ public class WordListActivity extends BaseActivity<WordListPresenter,WordListVie
     }
 
     @Override
-    public WordListPresenter getInitedPresenter(WordRepository repository) {
+    public WordListPresenter getInitedPresenter(WordRepositoryImpl repository) {
         return new WordListPresenter(this,repository);
     }
 

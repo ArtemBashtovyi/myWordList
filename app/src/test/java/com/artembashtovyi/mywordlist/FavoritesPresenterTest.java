@@ -1,25 +1,14 @@
 package com.artembashtovyi.mywordlist;
 
-import android.content.Context;
-
-import com.artembashtovyi.mywordlist.data.WordRepository;
-import com.artembashtovyi.mywordlist.data.model.Word;
-import com.artembashtovyi.mywordlist.data.sqlite.DbHelper;
+import com.artembashtovyi.mywordlist.data.WordRepositoryImpl;
 import com.artembashtovyi.mywordlist.ui.favorites.FavoritesPresenter;
 import com.artembashtovyi.mywordlist.ui.favorites.FavoritesView;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -37,7 +26,7 @@ public class FavoritesPresenterTest {
     FavoritesPresenter presenter;
 
     @Mock
-    WordRepository repository;
+    WordRepositoryImpl repository;
 
     @Mock
     FavoritesView view;

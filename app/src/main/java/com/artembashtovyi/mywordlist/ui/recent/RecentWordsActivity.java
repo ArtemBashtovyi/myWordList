@@ -9,7 +9,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -18,10 +17,9 @@ import android.widget.ImageView;
 
 import com.artembashtovyi.mywordlist.BaseActivity;
 import com.artembashtovyi.mywordlist.R;
-import com.artembashtovyi.mywordlist.data.WordRepository;
+import com.artembashtovyi.mywordlist.data.WordRepositoryImpl;
 import com.artembashtovyi.mywordlist.data.model.Word;
 import com.artembashtovyi.mywordlist.ui.adapter.EngVersionView;
-import com.artembashtovyi.mywordlist.ui.adapter.FullVersionView;
 import com.artembashtovyi.mywordlist.ui.adapter.ViewBindContract;
 import com.artembashtovyi.mywordlist.ui.adapter.WordAdapter;
 import com.artembashtovyi.mywordlist.ui.dialog.ViewChoiceDialog;
@@ -35,9 +33,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static android.support.v7.widget.RecyclerView.VERTICAL;
-
-public class RecentActivity extends BaseActivity<RecentPresenter,RecentView>
+public class RecentWordsActivity extends BaseActivity<RecentWordsPresenter,RecentView>
         implements NavigationView.OnNavigationItemSelectedListener,
         WordAdapter.OnWordClickListener,RecentView{
 
@@ -52,7 +48,7 @@ public class RecentActivity extends BaseActivity<RecentPresenter,RecentView>
     @BindView(R.id.view_contract_image_view)
     ImageView imageView;
 
-    private RecentPresenter presenter;
+    private RecentWordsPresenter presenter;
     private WordAdapter wordAdapter;
 
     @Override
@@ -72,7 +68,7 @@ public class RecentActivity extends BaseActivity<RecentPresenter,RecentView>
 
         imageView.setOnClickListener(view -> {
             if (wordAdapter != null) {
-               ViewChoiceDialog dialog =  ViewChoiceDialog.newInstance(new ViewChoiceDialog.ChoiceListener() {
+               ViewChoiceDialog dialog = ViewChoiceDialog.newInstance(new ViewChoiceDialog.ChoiceListener() {
                     @Override
                     public void onViewContractClick(ViewBindContract contract) {
                         wordAdapter.changeContract(contract);
@@ -120,18 +116,18 @@ public class RecentActivity extends BaseActivity<RecentPresenter,RecentView>
     }
 
     @Override
-    public RecentPresenter getInitedPresenter(WordRepository repository) {
-        return new RecentPresenter(repository,this);
+    public RecentWordsPresenter getInitedPresenter(WordRepositoryImpl repository) {
+        return new RecentWordsPresenter(repository,this);
     }
 
     @Override
-    protected void onPresenterCreatedOrRestored(@NonNull RecentPresenter presenter) {
+    protected void onPresenterCreatedOrRestored(@NonNull RecentWordsPresenter presenter) {
         this.presenter = presenter;
     }
 
     @Override
     public void showWords(List<Word> words) {
-        wordAdapter = new WordAdapter(new EngVersionView(),words,RecentActivity.this,this);
+        wordAdapter = new WordAdapter(new EngVersionView(),words,RecentWordsActivity.this,this);
         wordsRv.setAdapter(wordAdapter);
         wordsRv.addItemDecoration(new RecyclerViewItemDividerDecorator(this));
     }

@@ -8,8 +8,11 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.artembashtovyi.mywordlist.data.WordRepository;
+import com.artembashtovyi.mywordlist.data.WordRepositoryImpl;
+import com.artembashtovyi.mywordlist.data.async.AppExecutors;
 import com.artembashtovyi.mywordlist.data.sqlite.DbHelper;
+
+import java.util.concurrent.Executor;
 
 /**
  * Created by felix on 12/26/17
@@ -34,7 +37,7 @@ public abstract class BaseActivity<P extends Presenter<V>,V> extends AppCompatAc
         } else {
 
             presenter = ((BaseLoader<P>) loader).getPresenter();
-            // delivery presenter to OnStart() method descendents
+            // delivery presenter to OnStart() method descendants
             onPresenterCreatedOrRestored(presenter);
        }
 
@@ -60,7 +63,9 @@ public abstract class BaseActivity<P extends Presenter<V>,V> extends AppCompatAc
     public Loader<P> onCreateLoader(int id, Bundle args) {
         Log.i(TAG, "onCreteLoader" );
         DbHelper dbHelper = DbHelper.getInstance(getApplicationContext());
-        WordRepository wordRepository = WordRepository.getInstance(dbHelper);
+        Executor diskIOExecutor = AppExecutors.getInstance().getDiskExecutor();
+        Executor mainThreadExecutor = AppExecutors.getInstance().getMainThreadExecutor();
+        WordRepositoryImpl wordRepository = WordRepositoryImpl.getInstance(mainThreadExecutor,diskIOExecutor,dbHelper);
 
         // set initialized presenter with repository
         return new BaseLoader<>(BaseActivity.this, getInitedPresenter(wordRepository));
@@ -83,7 +88,7 @@ public abstract class BaseActivity<P extends Presenter<V>,V> extends AppCompatAc
     public abstract int getLoaderId();
 
     // hack with initialized repository and database helper
-    public abstract P getInitedPresenter(WordRepository repository);
+    public abstract P getInitedPresenter(WordRepositoryImpl repository);
 
     // when data will be reload (presenter)
     protected abstract void onPresenterCreatedOrRestored(@NonNull P presenter);

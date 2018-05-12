@@ -17,7 +17,6 @@ public class Word implements Parcelable {
     public Word() {
     }
 
-
     protected Word(Parcel in) {
         id = in.readInt();
         engVersion = in.readString();

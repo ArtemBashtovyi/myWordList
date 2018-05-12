@@ -1,10 +1,10 @@
 package com.artembashtovyi.mywordlist.ui.list.dialog;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,9 +20,6 @@ import com.artembashtovyi.mywordlist.data.model.Word;
  */
 
 public class WordDescriptionDialog extends DialogFragment{
-
-
-
 
 
     private static final String KEY = "Word";
@@ -70,13 +67,11 @@ public class WordDescriptionDialog extends DialogFragment{
         TextView uaVersionTv = (TextView) myLayout.findViewById(R.id.ua_version);
         changeView(imageView,isFavorite);
 
-
         imageView.setOnClickListener(view -> {
             changeView(imageView,listener.onImageFavoriteClick(word));
         });
 
-
-        Log.i("DescriptionDialogWord",word.toString()+" ");
+        Log.i("DescriptionDialogWord",word.toString() + " ");
 
         engVersionTv.setText(word.getEngVersion());
         uaVersionTv.setText(word.getUaVersion());
