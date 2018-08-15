@@ -25,7 +25,6 @@ public abstract class BaseActivity<P extends Presenter<V>,V> extends AppCompatAc
     private static final String TAG = "BaseActivity";
     private P presenter;
 
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

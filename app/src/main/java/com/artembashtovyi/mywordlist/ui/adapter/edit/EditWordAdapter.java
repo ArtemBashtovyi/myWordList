@@ -14,8 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class EditWordAdapter extends RecyclerView.Adapter<EditHolder>
-       {
+public class EditWordAdapter extends RecyclerView.Adapter<EditHolder> {
 
     private Context context;
     private List<SelectedWord> selectedWords;
@@ -32,7 +31,9 @@ public class EditWordAdapter extends RecyclerView.Adapter<EditHolder>
     private View.OnClickListener onClickListener = view -> {
         SelectedWord selectedWord = (SelectedWord) view.getTag();
         // set Word
-        Word word = new Word(selectedWord.getId(),selectedWord.getEngVersion(),selectedWord.getUaVersion());
+        Word word = new Word(selectedWord.getId(),selectedWord.getEngVersion(),
+                selectedWord.getUaVersion(),selectedWord.getState(),selectedWord.isFavorite());
+
         onViewClickListener.onEditClick(word);
     };
 
@@ -80,7 +81,7 @@ public class EditWordAdapter extends RecyclerView.Adapter<EditHolder>
         for (SelectedWord selectedWord : selectedWords) {
             if (selectedWord.isSelected()) {
                 words.add(new Word(selectedWord.getId(),selectedWord.getEngVersion(),
-                        selectedWord.getUaVersion()));
+                        selectedWord.getUaVersion(),selectedWord.getState(),selectedWord.isFavorite()));
 
                 Log.i("EditAdapter","getSelectedWord" +selectedWord.toString());
             }

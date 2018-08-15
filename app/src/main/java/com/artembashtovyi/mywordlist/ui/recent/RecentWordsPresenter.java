@@ -23,7 +23,12 @@ public class RecentWordsPresenter implements Presenter<RecentView> {
     }
 
     void loadWords() {
-        repository.getWords(words -> view.showWords(words), new RecentWordsQuery(30));
+        if (words == null) {
+            repository.getWords(wordsResult -> {
+                view.showWords(wordsResult);
+                words = wordsResult;
+            }, new RecentWordsQuery(30));
+        } else view.showWords(words);
     }
 
     @Override

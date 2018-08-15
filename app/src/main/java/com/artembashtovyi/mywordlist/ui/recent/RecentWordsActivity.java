@@ -22,6 +22,7 @@ import com.artembashtovyi.mywordlist.data.model.Word;
 import com.artembashtovyi.mywordlist.ui.adapter.EngVersionView;
 import com.artembashtovyi.mywordlist.ui.adapter.ViewBindContract;
 import com.artembashtovyi.mywordlist.ui.adapter.WordAdapter;
+import com.artembashtovyi.mywordlist.ui.colored.ColoredWordsActivity;
 import com.artembashtovyi.mywordlist.ui.dialog.ViewChoiceDialog;
 import com.artembashtovyi.mywordlist.ui.edit.EditListActivity;
 import com.artembashtovyi.mywordlist.ui.favorites.FavoritesActivity;
@@ -102,6 +103,7 @@ public class RecentWordsActivity extends BaseActivity<RecentWordsPresenter,Recen
         wordsRv.setLayoutManager(llm);
 
 
+
     }
 
     @Override
@@ -162,6 +164,8 @@ public class RecentWordsActivity extends BaseActivity<RecentWordsPresenter,Recen
             WordListActivity.start(this);
         } else if (id == R.id.nav_manage) {
             FavoritesActivity.start(this);
+        } else if (id == R.id.nav_colored) {
+            ColoredWordsActivity.start(this);
         }
 
 

@@ -11,7 +11,6 @@ import com.artembashtovyi.mywordlist.ui.adapter.EngVersionView;
 import com.artembashtovyi.mywordlist.ui.adapter.FullVersionView;
 import com.artembashtovyi.mywordlist.ui.adapter.UaVersionView;
 import com.artembashtovyi.mywordlist.ui.adapter.ViewBindContract;
-import com.artembashtovyi.mywordlist.ui.list.dialog.WordDescriptionDialog;
 
 /**
  * Created by felix on 12/28/17

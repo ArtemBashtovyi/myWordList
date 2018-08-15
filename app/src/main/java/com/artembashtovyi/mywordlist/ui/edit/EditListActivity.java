@@ -131,11 +131,13 @@ public class EditListActivity extends BaseActivity<EditListPresenter,EditWordsVi
     // ViewBindContract
     @Override
     public void showWords(List<Word> words) {
-        Log.i(TAG,"showWords");
-        editWordAdapter = new EditWordAdapter(this,words,this);
-        wordsRv.setAdapter(editWordAdapter);
-        DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(), VERTICAL);
-        wordsRv.addItemDecoration(decoration);
+        if (words != null) {
+            Log.i(TAG, "showWords");
+            editWordAdapter = new EditWordAdapter(this, words, this);
+            wordsRv.setAdapter(editWordAdapter);
+            DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(), VERTICAL);
+            wordsRv.addItemDecoration(decoration);
+        } else Log.i(TAG,"Can't show null");
     }
 
     @Override

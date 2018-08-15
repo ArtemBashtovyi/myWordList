@@ -1,6 +1,6 @@
 package com.artembashtovyi.mywordlist.data.sqlite.query;
 
-import com.artembashtovyi.mywordlist.data.sqlite.DbHelper;
+import android.provider.BaseColumns;
 
 
 
@@ -16,7 +16,7 @@ public class RecentWordsQuery implements Query {
     public String getSqlQuery(String tableName) {
 
         return "SELECT * FROM " + tableName
-                + " ORDER BY " + DbHelper.Words._ID + " DESC LIMIT " + countWords;
+                + " ORDER BY " + BaseColumns._ID + " DESC LIMIT " + countWords;
     }
 
 

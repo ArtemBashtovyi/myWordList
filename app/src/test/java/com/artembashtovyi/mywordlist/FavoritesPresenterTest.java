@@ -1,6 +1,7 @@
 package com.artembashtovyi.mywordlist;
 
 import com.artembashtovyi.mywordlist.data.WordRepositoryImpl;
+import com.artembashtovyi.mywordlist.data.async.WordCallbacks;
 import com.artembashtovyi.mywordlist.ui.favorites.FavoritesPresenter;
 import com.artembashtovyi.mywordlist.ui.favorites.FavoritesView;
 
@@ -10,12 +11,8 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by felix on 1/5/18
@@ -31,6 +28,9 @@ public class FavoritesPresenterTest {
     @Mock
     FavoritesView view;
 
+    @Mock
+    WordCallbacks callback;
+
     @Rule
     public WordInitializationRule initRule = new WordInitializationRule();
 
@@ -43,7 +43,7 @@ public class FavoritesPresenterTest {
 
     @Test
     public void getWordsTest() {
-        when(repository.getFavorites()).thenReturn(initRule.getFavoriteTestWords());
+        //when(repository.getFavorites(callback)).thenReturn(initRule.getFavoriteTestWords());
 
         presenter.loadFavorites();
 

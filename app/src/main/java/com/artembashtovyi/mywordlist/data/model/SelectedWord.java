@@ -7,7 +7,7 @@ public class SelectedWord extends Word{
     private boolean isSelected = false;
 
     public SelectedWord(Word word, boolean isSelected) {
-        super(word.getId(),word.getEngVersion(), word.getUaVersion());
+        super(word.getId(),word.getEngVersion(), word.getUaVersion(),word.getState(),word.isFavorite());
         this.isSelected = isSelected;
     }
 

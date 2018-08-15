@@ -10,4 +10,9 @@
     <color name="colorSelectedItem">#89009edc</color>
     <color name="colorUnSelectedItem">#ffffff</color>
 
+    <color name="colorRedState">#abef5350</color>
+    <color name="colorYellowState">#a4ffee58</color>
+    <color name="colorGreenState">#b466bb6a</color>
+    <color name="colorWhiteState">#ffffff</color>
+
 </resources>

@@ -1,6 +1,7 @@
 package com.artembashtovyi.mywordlist;
 
 import android.app.Application;
+import android.util.Log;
 
 import com.squareup.leakcanary.LeakCanary;
 
@@ -11,6 +12,7 @@ public class MyApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Log.i("GEGE","ASDA");
         if (LeakCanary.isInAnalyzerProcess(this)) {
             return;
         }

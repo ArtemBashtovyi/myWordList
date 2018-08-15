@@ -1,6 +1,9 @@
 package com.artembashtovyi.mywordlist.data.async;
 
+import android.support.annotation.Nullable;
+
 import com.artembashtovyi.mywordlist.data.model.Word;
+import com.artembashtovyi.mywordlist.ui.dialog.description.WordState;
 
 import java.util.List;
 
@@ -14,11 +17,11 @@ public interface WordCallbacks {
         void allWordsReceive(List<Word> words);
     }
 
-    interface FavoriteWordsCallback {
-        void favoriteWordsReceive(List<Word> words);
+    interface CheckWordCallback {
+        void checkExistence(boolean isFavorite);
     }
 
-    interface CheckWordCallback {
-        void checkFavorite(boolean isFavorite);
+    interface CheckWordStateCallback {
+        void checkWordState(@Nullable WordState wordState);
     }
 }

@@ -19,6 +19,10 @@
     <string name="ok">OK</string>
     <string name="cancel">CANCEL</string>
     <string name="pick_sort_type">Сортування</string>
+    <string name="title_activity_colored_words">ColoredWords</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
 
 
 </resources>

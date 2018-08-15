@@ -1,5 +1,4 @@
-package com.artembashtovyi.mywordlist.ui.list;
-
+package com.artembashtovyi.mywordlist.ui.colored;
 
 import com.artembashtovyi.mywordlist.data.model.Word;
 import com.artembashtovyi.mywordlist.ui.adapter.ViewBindContract;
@@ -7,12 +6,19 @@ import com.artembashtovyi.mywordlist.ui.dialog.description.DescriptionDialogCont
 
 import java.util.List;
 
-// view extend logic of description dialog
-interface WordListView extends DescriptionDialogContract {
+/**
+ * Created by felix on 5/12/18
+ */
 
-    void showWords(List<Word> words);
+public interface ColoredWordsView extends DescriptionDialogContract{
+
+    void showWords(List<Word> words, ViewBindContract contract);
 
     void showViewContract(ViewBindContract contract);
+
+    void saveRecyclerViewPosition();
+
+    void restoreRecyclerViewPosition(int position);
 
     void updateViewContract(ViewBindContract contract);
 }

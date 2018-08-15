@@ -42,7 +42,7 @@ public class EditListPresenter implements Presenter<EditWordsView> {
         if (selectedWords != null) {
             wordRepository.deleteWords(selectedWords);
             words.removeAll(selectedWords);
-            view.showEditedWordList(selectedWords);
+            view.showEditedWordList(words);
         }
     }
 

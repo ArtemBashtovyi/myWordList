@@ -1,11 +1,8 @@
 package com.artembashtovyi.mywordlist.ui.favorites;
 
 
-import android.util.Log;
-
 import com.artembashtovyi.mywordlist.Presenter;
 import com.artembashtovyi.mywordlist.data.WordRepositoryImpl;
-import com.artembashtovyi.mywordlist.data.async.WordCallbacks;
 import com.artembashtovyi.mywordlist.data.model.Word;
 
 import java.util.List;
@@ -24,19 +21,18 @@ public class FavoritesPresenter implements Presenter<FavoritesView> {
 
     public void loadFavorites() {
         view.showLoading();
-
-        WordCallbacks.FavoriteWordsCallback callback = (words) -> {
-            FavoritesPresenter.this.words = words;
-            view.showFavorites(words);
-            view.hideLoading();
-            Log.i("FavoritePresenter","callback Favorite words");
-        };
-        wordRepository.getFavorites(callback);
+        if (words == null) {
+            wordRepository.getFavoriteWords(words -> {
+                this.words = words;
+                view.showFavorites(words);
+            });
+        } else view.showFavorites(words);
+        view.hideLoading();
     }
 
 
-    public void removeFavorite(Word word) {
-        wordRepository.deleteFromFavorites(word);
+    void removeFavorite(Word word) {
+        wordRepository.setFavorite(word,false);
         words.remove(word);
     }
 

@@ -72,14 +72,10 @@ public class FavoritesActivity extends BaseActivity<FavoritesPresenter,Favorites
     }
 
     @Override
-    public void showLoading() {
-
-    }
+    public void showLoading() {}
 
     @Override
-    public void hideLoading() {
-
-    }
+    public void hideLoading() {}
 
     @Override
     public void showFavorites(List<Word> favorites) {

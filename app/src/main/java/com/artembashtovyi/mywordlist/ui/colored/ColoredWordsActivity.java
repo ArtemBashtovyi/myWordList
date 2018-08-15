@@ -1,21 +1,20 @@
-package com.artembashtovyi.mywordlist.ui.list;
+package com.artembashtovyi.mywordlist.ui.colored;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.widget.ImageView;
-import android.widget.SearchView;
 
 import com.artembashtovyi.mywordlist.BaseActivity;
 import com.artembashtovyi.mywordlist.R;
 import com.artembashtovyi.mywordlist.data.WordRepositoryImpl;
 import com.artembashtovyi.mywordlist.data.model.Word;
-import com.artembashtovyi.mywordlist.ui.adapter.EngVersionView;
 import com.artembashtovyi.mywordlist.ui.adapter.ViewBindContract;
 import com.artembashtovyi.mywordlist.ui.adapter.WordAdapter;
 import com.artembashtovyi.mywordlist.ui.dialog.ViewChoiceDialog;
@@ -29,20 +28,16 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class WordListActivity extends BaseActivity<WordListPresenter,WordListView> implements WordListView,
-        WordAdapter.OnWordClickListener {
+public class ColoredWordsActivity extends BaseActivity<ColoredWordsPresenter,ColoredWordsView>
+        implements ColoredWordsView,WordAdapter.OnWordClickListener {
 
+    private final static int LOADER_ID = 1005;
 
-    private DescriptionDialogClickCallbacks callback;
-
-    private static final int LOADER_ID = 202;
-    private static final String SAVED_LAYOUT_MANAGER = "POS";
-
-    @BindView(R.id.word_list_recycler_view)
+    @BindView(R.id.words_colored_recycler_view)
     RecyclerView wordsRv;
 
-    @BindView(R.id.search_view)
-    SearchView searchView;
+    @BindView(R.id.navigation)
+    BottomNavigationView navigationView;
 
     @BindView(R.id.view_contract_image_view)
     ImageView viewContractIv;
@@ -50,25 +45,43 @@ public class WordListActivity extends BaseActivity<WordListPresenter,WordListVie
     @BindView(R.id.interleaving_image_view)
     ImageView shuffleIv;
 
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
-
-    private WordAdapter wordAdapter;
-    private WordListPresenter presenter;
+    private ColoredWordsPresenter presenter;
+    private WordAdapter adapter;
     private WordDescriptionDialog descriptionDialog;
+    private DescriptionDialogClickCallbacks callback;
 
-
-    public static void start(@NonNull Context context) {
-        Intent intent = new Intent(context,WordListActivity.class);
+    public static void start(Context context) {
+        Intent intent = new Intent(context,ColoredWordsActivity.class);
         context.startActivity(intent);
     }
+
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.navigation_home:
+                    presenter.loadRedWords();
+                    return true;
+                case R.id.navigation_dashboard:
+                    presenter.loadYellowWords();
+                    return true;
+                case R.id.navigation_notifications:
+                    presenter.loadGreenWords();
+                    return true;
+            }
+            return false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_word_list);
+        setContentView(R.layout.activity_colored_words);
         ButterKnife.bind(this);
-        setSupportActionBar(toolbar);
+
+        navigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         LinearLayoutManager llm = new LinearLayoutManager(this);
         wordsRv.setLayoutManager(llm);
@@ -78,61 +91,64 @@ public class WordListActivity extends BaseActivity<WordListPresenter,WordListVie
 
         viewContractIv.setOnClickListener(view -> {
             ViewChoiceDialog dialog = ViewChoiceDialog.newInstance(new ViewChoiceDialog.ChoiceListener() {
-            @Override
-            public void onViewContractClick(ViewBindContract contract) {
-                if (wordAdapter != null) {
-                    presenter.changeAdapterContract(contract);
+                @Override
+                public void onViewContractClick(ViewBindContract contract) {
+                    if (adapter != null) {
+                        presenter.changeViewContract(contract);
+                    }
                 }
-            }
 
-            @Override
-            public int describeContents() {
-                return 0;
-            }
+                @Override
+                public int describeContents() {
+                    return 0;
+                }
 
-            @Override
-            public void writeToParcel(Parcel parcel, int i) {
+                @Override
+                public void writeToParcel(Parcel parcel, int i) {
 
-            }
+                }
+            });
+            dialog.show(getFragmentManager(),"viewContract");
         });
-           dialog.show(getFragmentManager(),"viewContract");
-        });
-
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                // filter recycler view when query submitted
-                wordAdapter.getFilter().filter(query);
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String query) {
-                // filter recycler view when text is changed
-                wordAdapter.getFilter().filter(query);
-                return false;
-            }
-        });
-
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        presenter.loadWords();
     }
 
     @Override
-    public void showWords(List<Word> words) {
-        wordAdapter = new WordAdapter(new EngVersionView(),words,this,this);
-        wordsRv.setAdapter(wordAdapter);
+    protected void onResume() {
+        super.onResume();
+        presenter.restoreCurrentPosition();
     }
 
+    @Override
+    public void showWords(List<Word> words, ViewBindContract contract) {
+        adapter = new WordAdapter(contract,words,this,this);
+        wordsRv.setAdapter(adapter);
+    }
+
+    // show specified view contract
     @Override
     public void showViewContract(ViewBindContract contract) {
-        wordAdapter.changeContract(contract);
+        adapter.changeContract(contract);
     }
+
+
+    @Override
+    public void saveRecyclerViewPosition() {
+        presenter.saveCurrentPosition(
+                ((LinearLayoutManager)wordsRv.getLayoutManager())
+                .findFirstCompletelyVisibleItemPosition()
+        );
+    }
+
+    @Override
+    public void restoreRecyclerViewPosition(int position) {
+        ((LinearLayoutManager) wordsRv.getLayoutManager()).scrollToPositionWithOffset(position,0);
+    }
+
 
     @Override
     public void showDescriptionDialog(Word word, boolean isFavorite, WordState state) {
@@ -146,7 +162,7 @@ public class WordListActivity extends BaseActivity<WordListPresenter,WordListVie
                     @Override
                     public void onImageColoredClick(Word word,WordState wordState) {
                         presenter.setWordState(word,wordState);
-                        wordAdapter.updateWord(word);
+
                     }
 
                     @Override
@@ -178,7 +194,7 @@ public class WordListActivity extends BaseActivity<WordListPresenter,WordListVie
 
     @Override
     public void updateViewContract(ViewBindContract contract) {
-        wordAdapter.changeContract(contract);
+        adapter.changeContract(contract);
     }
 
     // click Word
@@ -193,13 +209,19 @@ public class WordListActivity extends BaseActivity<WordListPresenter,WordListVie
     }
 
     @Override
-    public WordListPresenter getInitedPresenter(WordRepositoryImpl repository) {
-        return new WordListPresenter(this,repository);
+    public ColoredWordsPresenter getInitedPresenter(WordRepositoryImpl repository) {
+        return new ColoredWordsPresenter(this,repository);
     }
 
     @Override
-    protected void onPresenterCreatedOrRestored(@NonNull WordListPresenter presenter) {
+    protected void onPresenterCreatedOrRestored(@NonNull ColoredWordsPresenter presenter) {
         this.presenter = presenter;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        saveRecyclerViewPosition();
     }
 
     @Override
@@ -210,5 +232,4 @@ public class WordListActivity extends BaseActivity<WordListPresenter,WordListVie
             descriptionDialog.onStop();
         }
     }
-
 }

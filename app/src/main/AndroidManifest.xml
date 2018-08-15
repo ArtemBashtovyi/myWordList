@@ -23,7 +23,7 @@
         <activity
             android:name=".ui.edit.EditListActivity"
             android:label="@string/title_activity_word_list"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.list.WordListActivity"
             android:label="@string/title_activity_word_list"
@@ -35,7 +35,13 @@
         <activity
             android:name=".ui.favorites.FavoritesActivity"
             android:label="@string/title_activity_favorites"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:theme="@style/AppTheme.NoActionBar"
+            android:name=".ui.colored.ColoredWordsActivity"
+            android:label="@string/title_activity_colored_words">
+
+        </activity>
     </application>
 
 </manifest>

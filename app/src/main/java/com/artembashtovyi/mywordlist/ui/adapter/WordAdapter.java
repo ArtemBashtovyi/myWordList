@@ -48,8 +48,13 @@ public class WordAdapter extends RecyclerView.Adapter<WordHolder> implements Fil
     public void onBindViewHolder(WordHolder holder, int position) {
         viewBindContract.initializeView(filteredWords,holder,position);
 
+        Word word = words.get(position);
+        int color = R.color.colorRedState;
+
         holder.rootView.setOnClickListener(viewOnClickListener);
         holder.rootView.setTag(filteredWords.get(position));
+      //  Log.i("Adapter","Color : " +color );
+        holder.rootView.setBackgroundResource(color);
     }
 
     @Override
@@ -64,16 +69,19 @@ public class WordAdapter extends RecyclerView.Adapter<WordHolder> implements Fil
         notifyDataSetChanged();
     }
 
-    public void setPosition() {
-
+    public void updateWord(Word word) {
+        if (word != null) {
+            int position = words.indexOf(word);
+            if (position != -1) {
+                notifyItemChanged(position);
+            }
+        }
+        notifyDataSetChanged();
     }
-
-
 
     public interface OnWordClickListener {
         void clickCallBack(Word word);
     }
-
 
     // Filter for search
     @Override

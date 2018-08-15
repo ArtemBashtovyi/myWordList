@@ -61,16 +61,13 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.Favori
     }
 
     void removeFavorite(Word word) {
-        int position = words.indexOf(word);
-        notifyItemRemoved(position);
+        notifyDataSetChanged();
     }
 
 
     public interface OnWordClickListener {
         void clickCallBack(Word word);
     }
-
-
 
 
     class FavoriteHolder extends RecyclerView.ViewHolder {

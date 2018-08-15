@@ -5,7 +5,7 @@ android {
     buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "com.artembashtovyi.mywordlist"
-        minSdkVersion 15
+        minSdkVersion 19
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -13,6 +13,7 @@ android {
         jackOptions {
             enabled true
         }
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
@@ -29,9 +30,11 @@ android {
         unitTests.returnDefaultValues = true
     }
 
+
 }
 
 dependencies {
+    implementation 'com.android.support:support-vector-drawable:25.4.0'
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -40,11 +43,11 @@ dependencies {
 
 
     compile 'com.android.support:appcompat-v7:25.3.1'
-    compile'com.android.support:design:25.3.1'
+    compile 'com.android.support:design:25.3.1'
     compile 'com.android.support:support-v4:25.3.1'
 
     compile 'com.jakewharton:butterknife:8.7.0'
-    compile'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
 
     testCompile 'junit:junit:4.12'
 
@@ -53,7 +56,7 @@ dependencies {
     // required if you want to use Mockito for Android tests
     androidTestCompile 'org.mockito:mockito-android:2.7.22'
 
-    annotationProcessor'com.jakewharton:butterknife-compiler:8.7.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.7.0'
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.4'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
 }
