@@ -10,6 +10,8 @@ import java.util.concurrent.Executor;
 // Custom executor for UiThread with Handler( MainLooper)
 public class MainThreadExecutor implements Executor {
 
+
+
     private final Handler handler = new Handler(Looper.getMainLooper());
 
     @Override
